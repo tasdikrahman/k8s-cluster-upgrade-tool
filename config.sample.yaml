@@ -1,0 +1,17 @@
+---
+# generated from the k8s-cluster-upgrade-tool
+# please change the keys and values under the "components" key as and when required.
+# NOTE: For the end user of this tool, codebase changes are required if you want to add more keys under components and
+# have them set/validated on the cluster.
+components:
+  aws-node: "aws-node-version"
+  cluster-autoscaler: "cluster-autoscaler-version"
+  coredns: "coredns-version"
+  kube-proxy: "kube-proxy-version"
+clusterlist:
+- Name: "cluster1"
+  AwsRegion: "region1"
+  AwsAccount: "account1"
+- Name: "cluster2"
+  AwsRegion: "region1"
+  AwsAccount: "account1"
