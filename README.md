@@ -1,9 +1,5 @@
 ## k8s-cluster-upgrade-tool
 
-NOTE: Please use the tool as a reference, we use this is in production, but you will have to make a couple of changes to the tool
-to make it work for you, for example as of now the deployment object names are tied to the way it looks for us. Support for 
-making it configurable is coming soon, note, it's only for postUpgradeChecks and setComponentVersion Commands
-
 The tool allows you to 
 - check for the components installed in the cluster and see whether everything is running in the required version or not and if not
 - Set the component running in the cluster to the desired version.
