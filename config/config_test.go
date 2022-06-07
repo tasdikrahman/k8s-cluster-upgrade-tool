@@ -10,6 +10,71 @@ import (
 	"testing"
 )
 
+func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
+	tests := []struct {
+		name          string
+		configuration Configurations
+		result        bool
+	}{
+		{
+			name: "when the config passed has all keys and values for awsnode, coredns, clusterautoscaler, kubeproxy present",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster1",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+				},
+			},
+			result: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.configuration.IsK8sObjectAttributeValid(), tt.result)
+		})
+	}
+}
+
 func TestConfigurations_IsClusterNameValid(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -181,7 +246,7 @@ func TestRead(t *testing.T) {
 		err  error
 	}{
 		{"when the config file is present with all the config keys and read successfully",
-			File{fileName: "config", fileType: "yaml", dirName: "/tmp", data: "---\ncomponents:\n  aws-node: \"aws-node-version\"\n  cluster-autoscaler: \"cluster-autoscaler-version\"\n  coredns: \"core-dns-version\"\n  kube-proxy: \"kube-proxy-version\"\nclusterlist:\n- Name: \"cluster1\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n- Name: \"cluster2\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n", writeFile: true},
+			File{fileName: "config", fileType: "yaml", dirName: "/tmp", data: "---\ncomponents:\n  aws-node: \"aws-node-version\"\n  cluster-autoscaler: \"cluster-autoscaler-version\"\n  coredns: \"core-dns-version\"\n  kube-proxy: \"kube-proxy-version\"\nclusterlist:\n- Name: \"cluster1\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n  AwsNodeObject:\n    type: \"daemonset\"\n    name: \"aws-node\"\n  ClusterAutoscalerObject:\n    type: \"deployment\"\n    name: \"cluster-autoscaler\"\n  CoreDnsObject:\n    type: \"deployment\"\n    name: \"coredns\"\n  KubeProxyObject:\n    type: \"daemonset\"\n    name: \"kube-proxy\"\n- Name: \"cluster2\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n  AwsNodeObject:\n    type: \"daemonset\"\n    name: \"aws-node\"\n  ClusterAutoscalerObject:\n    type: \"deployment\"\n    name: \"cluster-autoscaler\"\n  CoreDnsObject:\n    type: \"deployment\"\n    name: \"coredns\"\n  KubeProxyObject:\n    type: \"daemonset\"\n    name: \"kube-proxy\"", writeFile: true},
 			nil,
 		},
 		{"when the config file is present and read successfully, but one of the keys for cluster list config is not present with the value",

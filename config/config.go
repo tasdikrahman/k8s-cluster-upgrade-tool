@@ -21,9 +21,18 @@ type Configurations struct {
 
 // reference: https://stackoverflow.com/questions/63889004/how-to-access-specific-items-in-an-array-from-viper
 type ClusterListConfiguration struct {
-	Name       string `mapstructure:"Name"`
-	AwsRegion  string `mapstructure:"AwsRegion"`
-	AwsAccount string `mapstructure:"AwsAccount"`
+	Name                    string    `mapstructure:"Name"`
+	AwsRegion               string    `mapstructure:"AwsRegion"`
+	AwsAccount              string    `mapstructure:"AwsAccount"`
+	AwsNodeObject           K8sObject `mapstructure:"AwsNodeObject"`
+	ClusterAutoscalerObject K8sObject `mapstructure:"ClusterAutoscalerObject"`
+	CoreDnsObject           K8sObject `mapstructure:"CoreDnsObject"`
+	KubeProxyObject         K8sObject `mapstructure:"KubeProxyObject"`
+}
+
+type K8sObject struct {
+	Name string `mapstructure:"name"`
+	Type string `mapstructure:"type"`
 }
 
 type ComponentVersionConfigurations struct {
@@ -31,6 +40,16 @@ type ComponentVersionConfigurations struct {
 	ClusterAutoscaler string `mapstructure:"cluster-autoscaler"`
 	CoreDns           string `mapstructure:"coredns"`
 	KubeProxy         string `mapstructure:"kube-proxy"`
+}
+
+func (c Configurations) IsK8sObjectAttributeValid() bool {
+	valid := true
+	for _, cluster := range c.ClusterList {
+		if cluster.AwsNodeObject.Name == "" || cluster.AwsNodeObject.Type == "" || cluster.ClusterAutoscalerObject.Name == "" || cluster.ClusterAutoscalerObject.Type == "" || cluster.CoreDnsObject.Name == "" || cluster.CoreDnsObject.Type == "" || cluster.KubeProxyObject.Name == "" || cluster.KubeProxyObject.Type == "" {
+			valid = false
+		}
+	}
+	return valid
 }
 
 func (c Configurations) IsClusterNameValid(clusterName string) bool {

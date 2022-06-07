@@ -9,7 +9,7 @@ The tool allows you to
 
 - The cli supports both mac and Linux machines at the moment. You can download the respective binaries from the releases page.
 - You have logged into the particular `AWS_PROFILE`, using the authz/authn mechanism, and your user has permissions to modify ASG's for your account and region.
-- You are able to run, `use-context` (with the presense of `~/.kube/config` on your machine) for your cluster, say for example you want to interact with valid-cluster-name cluster, you are able to run the below command
+- You are able to run, `use-context` (with the presence of `~/.kube/config` on your machine) for your cluster, say for example you want to interact with valid-cluster-name cluster, you are able to run the below command
 
 ```
 $ kubectl config use-context valid-cluster-name
