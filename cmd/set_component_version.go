@@ -41,16 +41,40 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		// Read config from file
+		configFileName, configFileType, configFilePath := config.FileMetadata()
+		configuration, err := config.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		componentName, imageTag := args[1], args[2]
 		switch componentName {
 		case "coredns":
-			setComponentVersion(imageTag, componentName, "deployment.apps/coredns", "deployment")
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "coredns")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		case "kube-proxy":
-			setComponentVersion(imageTag, componentName, "daemonset.apps/kube-proxy", "daemonset")
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "kube-proxy")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		case "aws-node":
-			setComponentVersion(imageTag, componentName, "daemonset.apps/aws-node", "daemonset")
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "aws-node")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		case "cluster-autoscaler":
-			log.Printf("for %s, please update the component via helm as we maintain the charts for the same.", componentName)
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "cluster-autoscaler")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		}
 	},
 }

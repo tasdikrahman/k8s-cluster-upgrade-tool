@@ -6,19 +6,6 @@ import (
 	"strings"
 )
 
-// NOTE: Will have to be changed for clusters in the wild
-func GetClusterAutoscalerDeploymentNameForCluster(clusterName string) (string, error) {
-	clusterAutoscalerDeploymentName := "cluster-autoscaler-aws-cluster-autoscaler"
-	if strings.Contains(clusterName, "k8s") {
-		clusterNameSlice := strings.Split(clusterName, "-")
-		deploymentName := clusterNameSlice[len(clusterNameSlice)-2] + "-" + clusterNameSlice[len(clusterNameSlice)-1] + "-" +
-			clusterAutoscalerDeploymentName
-		return deploymentName, nil
-	} else {
-		return clusterAutoscalerDeploymentName, nil
-	}
-}
-
 func ParseComponentImage(kubectlExecOutput string, imageSection string) (string, error) {
 	if imageSection == "imageTag" {
 		return strings.Trim(strings.Split(kubectlExecOutput, ":")[1], "'"), nil

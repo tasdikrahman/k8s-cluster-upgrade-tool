@@ -7,34 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetClusterAutoscalerDeploymentNameForCluster(t *testing.T) {
-	type args struct {
-		clusterName string
-		err         error
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{"when GetClusterAutoscalerDeploymentNameForCluster is passed with a rider cluster Name",
-			args{"k8s-foo-baz-cluster-0", nil},
-			"cluster-0-cluster-autoscaler-aws-cluster-autoscaler",
-		},
-		{"when GetClusterAutoscalerDeploymentNameForCluster is passed with a vendor cluster Name",
-			args{"foo-cluster", nil},
-			"cluster-autoscaler-aws-cluster-autoscaler",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetClusterAutoscalerDeploymentNameForCluster(tt.args.clusterName)
-			assert.Equal(t, got, tt.want)
-			assert.Nil(t, err, tt.args.err)
-		})
-	}
-}
-
 func TestParseComponentImage(t *testing.T) {
 	type args struct {
 		kubectlExecOutput string
