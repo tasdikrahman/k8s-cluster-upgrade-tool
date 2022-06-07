@@ -120,10 +120,8 @@ func Read(fileName, fileType, filePath string) error {
 		return errors.New("mandatory component version of either aws-node, coredns, kube-proxy or cluster-autoscaler not set in config file")
 	}
 
-	for _, cluster := range Configuration.ClusterList {
-		if cluster.Name == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" {
-			return errors.New("one of the clusterlist elements has either Name, AwsRegion or AwsAccount missing")
-		}
+	if !Configuration.IsClusterListConfigurationValid() {
+		return errors.New("one of the clusterlist elements has either Name, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
 	}
 
 	log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
