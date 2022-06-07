@@ -122,7 +122,7 @@ func Read(fileName, fileType, filePath string) (config Configurations, err error
 	}
 
 	// check for the mandatory config file variables being read
-	if viper.Get("components.aws-node") == nil || viper.Get("components.coredns") == nil || viper.Get("components.kube-proxy") == nil || viper.Get("components.cluster-autoscaler") == nil {
+	if !config.IsComponentVersionConfigurationsValid() {
 		return Configurations{}, errors.New("mandatory component version of either aws-node, coredns, kube-proxy or cluster-autoscaler not set in config file")
 	}
 
