@@ -501,6 +501,189 @@ func TestConfigurations_IsComponentVersionConfigurationsValid(t *testing.T) {
 	}
 }
 
+func TestConfigurations_GetK8sObjectNameAndObjectTypeForCluster(t *testing.T) {
+	tests := []struct {
+		name                                   string
+		configuration                          Configurations
+		clusterNameArg, k8sObjectArg           string
+		expectedResultName, expectedResultType string
+		expectedErr                            error
+	}{
+		{
+			name: "when the cluster name is present and the k8sobject passed is valid",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster1",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+				},
+			},
+			clusterNameArg:     "cluster1",
+			k8sObjectArg:       "aws-node",
+			expectedResultName: "aws-node",
+			expectedResultType: "daemonset",
+			expectedErr:        nil,
+		},
+		{
+			name: "when the cluster name is present and the k8sobject passed is invalid",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster1",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+				},
+			},
+			clusterNameArg:     "cluster1",
+			k8sObjectArg:       "invalid-arg",
+			expectedResultName: "",
+			expectedResultType: "",
+			expectedErr:        errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy"),
+		},
+		{
+			name: "when the cluster name is not present",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster1",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+				},
+			},
+			clusterNameArg:     "invalid cluster",
+			k8sObjectArg:       "aws-node",
+			expectedResultName: "",
+			expectedResultType: "",
+			expectedErr:        errors.New("please check if you passed a valid cluster name"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actualResultName, actualResultType, actualError := tt.configuration.GetK8sObjectNameAndObjectTypeForCluster(tt.clusterNameArg, tt.k8sObjectArg)
+
+			assert.Equal(t, tt.expectedResultName, actualResultName)
+			assert.Equal(t, tt.expectedResultType, actualResultType)
+			assert.Equal(t, tt.expectedErr, actualError)
+		})
+	}
+}
+
 func TestRead(t *testing.T) {
 	type File struct {
 		fileName  string

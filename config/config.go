@@ -40,6 +40,7 @@ type ComponentVersionConfigurations struct {
 	KubeProxy         string `mapstructure:"kube-proxy"`
 }
 
+// TODO Add spec to check for unique cluster name list in config
 func (c Configurations) IsClusterListConfigurationValid() bool {
 	valid := true
 	for _, cluster := range c.ClusterList {
@@ -66,6 +67,26 @@ func (c Configurations) IsClusterNameValid(clusterName string) bool {
 		}
 	}
 	return contains
+}
+
+func (c Configurations) GetK8sObjectNameAndObjectTypeForCluster(clusterName, k8sObject string) (objectName, objectType string, err error) {
+	for _, cluster := range c.ClusterList {
+		if cluster.Name == clusterName {
+			switch k8sObject {
+			case "aws-node":
+				return cluster.AwsNodeObject.Name, cluster.AwsNodeObject.Type, nil
+			case "cluster-autoscaler":
+				return cluster.ClusterAutoscalerObject.Name, cluster.ClusterAutoscalerObject.Type, nil
+			case "kube-proxy":
+				return cluster.KubeProxyObject.Name, cluster.KubeProxyObject.Type, nil
+			case "coredns":
+				return cluster.CoreDnsObject.Name, cluster.CoreDnsObject.Type, nil
+			default:
+				return "", "", errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
+			}
+		}
+	}
+	return "", "", errors.New("please check if you passed a valid cluster name")
 }
 
 func (c Configurations) GetAwsAccountAndRegionForCluster(clusterName string) (awsAccount, awsRegion string, err error) {
