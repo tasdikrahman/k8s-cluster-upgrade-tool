@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/spf13/cobra"
 	"log"
+	"os"
 
 	toolConfig "k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/aws"
@@ -38,9 +40,17 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		asg, _ := cmd.Flags().GetString("autoscaling-group")
 		dryRun, _ := cmd.Flags().GetBool("dry-run")
 
+		// Read config from file
+		configFileName, configFileType, configFilePath := toolConfig.FileMetadata()
+		configuration, err := toolConfig.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		// validate the cluster name and mapping if it's present
-		if toolConfig.Configuration.IsClusterNameValid(cluster) {
-			_, _, err := toolConfig.Configuration.GetAwsAccountAndRegionForCluster(cluster)
+		if configuration.IsClusterNameValid(cluster) {
+			_, _, err := configuration.GetAwsAccountAndRegionForCluster(cluster)
 			if err == nil {
 				log.Println("Setting kubernetes context to", cluster)
 				setK8sContext(cluster)
@@ -50,7 +60,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		}
 
 		// storing all the instances with their private DNS's for the passed ASG for the AWS profile mapped for the cluster passed
-		awsAccount, awsRegion, _ := toolConfig.Configuration.GetAwsAccountAndRegionForCluster(cluster)
+		awsAccount, awsRegion, _ := configuration.GetAwsAccountAndRegionForCluster(cluster)
 
 		// create aws config
 		awsGetterObj := &aws.ConfigGetter{ConfigClientInterface: &aws.Config{}}

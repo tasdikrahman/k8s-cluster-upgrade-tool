@@ -12,8 +12,6 @@ const (
 	FilePath = "$HOME/.k8s-cluster-upgrade-tool"
 )
 
-var Configuration Configurations
-
 type Configurations struct {
 	Components  ComponentVersionConfigurations `mapstructure:"components"`
 	ClusterList []ClusterListConfiguration     `mapstructure:"clusterlist"`
@@ -104,39 +102,39 @@ func (c Configurations) ValidatePassedComponentVersions(componentName, component
 	return nil
 }
 
-func Read(fileName, fileType, filePath string) error {
+func Read(fileName, fileType, filePath string) (config Configurations, err error) {
 	viper.SetConfigName(fileName)
 	viper.SetConfigType(fileType)
 	viper.AddConfigPath(filePath)
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8s-cluster-upgrade-tool/config.yaml if not")
+			return Configurations{}, errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8s-cluster-upgrade-tool/config.yaml if not")
 		} else {
-			return errors.New("error reading from config file")
+			return Configurations{}, errors.New("error reading from config file")
 		}
 	}
 	log.Println("Config file used:", viper.ConfigFileUsed())
 
-	err = viper.Unmarshal(&Configuration)
+	err = viper.Unmarshal(&config)
 	if err != nil {
-		return errors.New("error un marshaling config file")
+		return Configurations{}, errors.New("error un marshaling config file")
 	}
 
 	// check for the mandatory config file variables being read
 	if viper.Get("components.aws-node") == nil || viper.Get("components.coredns") == nil || viper.Get("components.kube-proxy") == nil || viper.Get("components.cluster-autoscaler") == nil {
-		return errors.New("mandatory component version of either aws-node, coredns, kube-proxy or cluster-autoscaler not set in config file")
+		return Configurations{}, errors.New("mandatory component version of either aws-node, coredns, kube-proxy or cluster-autoscaler not set in config file")
 	}
 
-	if !Configuration.IsClusterListConfigurationValid() {
-		return errors.New("one of the clusterlist elements has either Name, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
+	if !config.IsClusterListConfigurationValid() {
+		return Configurations{}, errors.New("one of the clusterlist elements has either Name, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
 	}
 
 	log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
 	log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
 	log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
 	log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
-	return nil
+	return config, nil
 }
 
 func FileMetadata() (fileName, filePath, fileType string) {

@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -20,7 +21,15 @@ Usage:
 $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if config.Configuration.IsClusterNameValid(args[0]) {
+		// Read config from file
+		configFileName, configFileType, configFilePath := config.FileMetadata()
+		configuration, err := config.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		if configuration.IsClusterNameValid(args[0]) {
 			fmt.Println("Setting kubernetes context to", args[0])
 			setK8sContext(args[0])
 		} else {

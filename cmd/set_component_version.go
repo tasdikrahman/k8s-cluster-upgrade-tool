@@ -3,9 +3,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
 	"k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/k8s"
+	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -19,11 +20,20 @@ Usage:
 $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-version`,
 	Args: cobra.ExactArgs(3),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		err := config.Configuration.ValidatePassedComponentVersions(args[1], args[2])
+		// Read config from file
+		configFileName, configFileType, configFilePath := config.FileMetadata()
+		configuration, err := config.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		err = configuration.ValidatePassedComponentVersions(args[1], args[2])
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
-		if config.Configuration.IsClusterNameValid(args[0]) {
+
+		if configuration.IsClusterNameValid(args[0]) {
 			fmt.Println("Setting kubernetes context to", args[0])
 			setK8sContext(args[0])
 		} else {

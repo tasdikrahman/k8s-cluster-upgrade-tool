@@ -564,7 +564,7 @@ func TestRead(t *testing.T) {
 				defer os.Remove(fmt.Sprintf("%s/%s.%s", tt.file.dirName, tt.file.fileName, tt.file.fileType))
 			}
 
-			err := Read(tt.file.fileName, tt.file.fileType, tt.file.dirName)
+			_, err := Read(tt.file.fileName, tt.file.fileType, tt.file.dirName)
 
 			assert.Equal(t, err, tt.err)
 		})
