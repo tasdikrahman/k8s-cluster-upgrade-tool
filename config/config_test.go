@@ -162,11 +162,146 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 			},
 			result: false,
 		},
+		{
+			name: "when the config passed has Name attribute value missing",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+					},
+				},
+			},
+			result: false,
+		},
+		{
+			name: "when the config passed has AwsRegion attribute value missing",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster-1",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+					},
+				},
+			},
+			result: false,
+		},
+		{
+			name: "when the config passed has AwsAccount attribute value missing",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:      "cluster-1",
+						AwsRegion: "region",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+					},
+				},
+			},
+			result: false,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.configuration.IsK8sObjectAttributeValid(), tt.result)
+			assert.Equal(t, tt.configuration.IsClusterListConfigurationValid(), tt.result)
 		})
 	}
 }

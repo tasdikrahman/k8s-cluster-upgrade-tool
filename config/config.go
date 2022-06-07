@@ -42,10 +42,10 @@ type ComponentVersionConfigurations struct {
 	KubeProxy         string `mapstructure:"kube-proxy"`
 }
 
-func (c Configurations) IsK8sObjectAttributeValid() bool {
+func (c Configurations) IsClusterListConfigurationValid() bool {
 	valid := true
 	for _, cluster := range c.ClusterList {
-		if cluster.AwsNodeObject.Name == "" || cluster.AwsNodeObject.Type == "" || cluster.ClusterAutoscalerObject.Name == "" || cluster.ClusterAutoscalerObject.Type == "" || cluster.CoreDnsObject.Name == "" || cluster.CoreDnsObject.Type == "" || cluster.KubeProxyObject.Name == "" || cluster.KubeProxyObject.Type == "" {
+		if cluster.Name == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.Name == "" || cluster.AwsNodeObject.Type == "" || cluster.ClusterAutoscalerObject.Name == "" || cluster.ClusterAutoscalerObject.Type == "" || cluster.CoreDnsObject.Name == "" || cluster.CoreDnsObject.Type == "" || cluster.KubeProxyObject.Name == "" || cluster.KubeProxyObject.Type == "" {
 			valid = false
 		}
 	}
