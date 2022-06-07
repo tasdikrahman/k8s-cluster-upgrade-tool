@@ -37,11 +37,19 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		// Read config from file
+		configFileName, configFileType, configFilePath := config.FileMetadata()
+		configuration, err := config.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		fmt.Println("running post upgrade checks")
-		checkAwsNodeComponentVersion()
-		checkKubeProxyComponentVersion()
-		checkCoreDnsComponentVersion()
-		checkClusterAutoscalerVersion(args[0])
+		checkAwsNodeComponentVersion(args[0], configuration)
+		checkKubeProxyComponentVersion(args[0], configuration)
+		checkCoreDnsComponentVersion(args[0], configuration)
+		checkClusterAutoscalerVersion(args[0], configuration)
 	},
 }
 
@@ -64,10 +72,11 @@ func setK8sContext(clusterName string) {
 	}
 }
 
-func checkAwsNodeComponentVersion() {
+func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
 	fmt.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
-	args := strings.Fields(k8s.KubectlGetImageCommand("daemonset", "aws-node"))
+	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "aws-node")
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatal(err)
@@ -85,10 +94,11 @@ func checkAwsNodeComponentVersion() {
 	}
 }
 
-func checkKubeProxyComponentVersion() {
+func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations) {
 	fmt.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
-	args := strings.Fields(k8s.KubectlGetImageCommand("daemonset", "kube-proxy"))
+	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "kube-proxy")
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatal(err)
@@ -107,10 +117,11 @@ func checkKubeProxyComponentVersion() {
 	}
 }
 
-func checkCoreDnsComponentVersion() {
-	fmt.Println("Checking core-dns version")
+func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations) {
+	fmt.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
-	args := strings.Fields(k8s.KubectlGetImageCommand("deployment", "coredns"))
+	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "coredns")
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatal(err)
@@ -129,14 +140,11 @@ func checkCoreDnsComponentVersion() {
 	}
 }
 
-func checkClusterAutoscalerVersion(clusterName string) {
+func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations) {
 	fmt.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
-	deploymentName, err := k8s.GetClusterAutoscalerDeploymentNameForCluster(clusterName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	args := strings.Fields(k8s.KubectlGetImageCommand("deployment", deploymentName))
+	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "cluster-autoscaler")
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatal(err)
