@@ -66,6 +66,102 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 			},
 			result: true,
 		},
+		{
+			name: "when the config passed has all keys and values for awsnode, coredns, clusterautoscaler, kubeproxy present but one of the values for the keys is an empty string",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster1",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "",
+						},
+					},
+				},
+			},
+			result: false,
+		},
+		{
+			name: "when the config passed has one of the k8sObjects keys missing",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						Name:       "cluster1",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+						CoreDnsObject: K8sObject{
+							Name: "coredns",
+							Type: "deployment",
+						},
+					},
+					{
+						Name:       "cluster2",
+						AwsRegion:  "region",
+						AwsAccount: "account",
+						AwsNodeObject: K8sObject{
+							Name: "aws-node",
+							Type: "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							Name: "cluster-autoscaler",
+							Type: "deployment",
+						},
+						KubeProxyObject: K8sObject{
+							Name: "kube-proxy",
+							Type: "daemonset",
+						},
+					},
+				},
+			},
+			result: false,
+		},
 	}
 
 	for _, tt := range tests {
