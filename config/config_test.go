@@ -463,6 +463,44 @@ func TestConfigurations_ValidatePassedComponentVersions(t *testing.T) {
 	}
 }
 
+func TestConfigurations_IsComponentVersionConfigurationsValid(t *testing.T) {
+	tests := []struct {
+		name          string
+		configuration Configurations
+		result        bool
+	}{
+		{
+			name: "when all the passed component version configurations are present",
+			configuration: Configurations{
+				Components: ComponentVersionConfigurations{
+					CoreDns:           "core-dns-version",
+					AwsNode:           "aws-node-version",
+					ClusterAutoscaler: "cluster-autoscaler-version",
+					KubeProxy:         "kube-proxy-version",
+				},
+			},
+			result: true,
+		},
+		{
+			name: "when one of the required component keys are not passed",
+			configuration: Configurations{
+				Components: ComponentVersionConfigurations{
+					AwsNode:           "aws-node-version",
+					ClusterAutoscaler: "cluster-autoscaler-version",
+					KubeProxy:         "kube-proxy-version",
+				},
+			},
+			result: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.configuration.IsComponentVersionConfigurationsValid(), tt.result)
+		})
+	}
+}
+
 func TestRead(t *testing.T) {
 	type File struct {
 		fileName  string

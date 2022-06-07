@@ -52,6 +52,14 @@ func (c Configurations) IsClusterListConfigurationValid() bool {
 	return valid
 }
 
+func (c Configurations) IsComponentVersionConfigurationsValid() bool {
+	valid := true
+	if c.Components.CoreDns == "" || c.Components.AwsNode == "" || c.Components.ClusterAutoscaler == "" || c.Components.KubeProxy == "" {
+		valid = false
+	}
+	return valid
+}
+
 func (c Configurations) IsClusterNameValid(clusterName string) bool {
 	contains := false
 	for _, cluster := range c.ClusterList {
