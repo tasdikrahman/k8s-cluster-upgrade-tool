@@ -2,14 +2,11 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/spf13/cobra"
-	"log"
-	"os"
-
 	toolConfig "k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/aws"
+	"log"
 )
 
 var DryRunFlag bool
@@ -44,8 +41,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		configFileName, configFileType, configFilePath := toolConfig.FileMetadata()
 		configuration, err := toolConfig.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Fatal(err)
 		}
 
 		// validate the cluster name and mapping if it's present

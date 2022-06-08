@@ -146,6 +146,12 @@ node/ip-far.eu-west-1.compute.internal drained
 $ go test ./... -v
 ```
 
+## Linting
+
+```
+$ docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.45.2 golangci-lint run -v
+```
+
 ## Adding a new release
 
 Check [RELEASE.md](https://github.com/deliveryhero/k8s-cluster-upgrade-tool/tree/master/docs/RELEASE.md)

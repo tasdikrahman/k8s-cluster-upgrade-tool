@@ -76,6 +76,9 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 	fmt.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "aws-node")
+	if err != nil {
+		log.Fatal(err)
+	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
@@ -98,6 +101,9 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 	fmt.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "kube-proxy")
+	if err != nil {
+		log.Fatal(err)
+	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
@@ -121,6 +127,9 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 	fmt.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "coredns")
+	if err != nil {
+		log.Fatal(err)
+	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
@@ -144,6 +153,9 @@ func checkClusterAutoscalerVersion(clusterName string, configuration config.Conf
 	fmt.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "cluster-autoscaler")
+	if err != nil {
+		log.Fatal(err)
+	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
