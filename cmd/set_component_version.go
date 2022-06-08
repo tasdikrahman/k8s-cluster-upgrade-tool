@@ -6,7 +6,6 @@ import (
 	"k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/k8s"
 	"log"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -24,8 +23,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Fatal(err)
 		}
 
 		err = configuration.ValidatePassedComponentVersions(args[1], args[2])
@@ -45,8 +43,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Fatal(err)
 		}
 
 		componentName, imageTag := args[1], args[2]
