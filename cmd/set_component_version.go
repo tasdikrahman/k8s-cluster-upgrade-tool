@@ -24,7 +24,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln("There was an error reading config from the config file")
 		}
 
 		log.Println("Config file used:", viper.ConfigFileUsed())
@@ -39,7 +39,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		}
 
 		if configuration.IsClusterNameValid(args[0]) {
-			fmt.Println("Setting kubernetes context to", args[0])
+			log.Println("Setting kubernetes context to", args[0])
 			setK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
@@ -58,7 +58,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		case "coredns":
 			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "coredns")
 			if err != nil {
-				log.Println(err)
+				log.Fatalln("There was an error reading config from the config file")
 			}
 			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		case "kube-proxy":
@@ -94,12 +94,12 @@ func setComponentVersion(imageTag string, componentName string, k8sSetQueryCmdOb
 	args := strings.Fields(k8s.KubectlGetImageCommand(componentK8sObject, componentName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatal("There was an error while fetching the image of the component from the cluster: ", err)
+		log.Fatalln("There was an error while fetching the image of the component from the cluster: ", err)
 	}
 
 	imagePrefix, err := k8s.ParseComponentImage(string(output), "imagePrefix")
 	if err != nil {
-		log.Fatal("There was an error while parsing the image prefix step: ", err)
+		log.Fatalln("There was an error while parsing the image prefix step: ", err)
 	}
 	containerImage := imagePrefix + ":" + imageTag
 

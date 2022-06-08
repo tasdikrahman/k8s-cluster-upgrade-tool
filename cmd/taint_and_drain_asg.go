@@ -42,7 +42,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		configFileName, configFileType, configFilePath := toolConfig.FileMetadata()
 		configuration, err := toolConfig.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln("There was an error reading config from the config file")
 		}
 
 		log.Println("Config file used:", viper.ConfigFileUsed())
@@ -59,7 +59,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 				setK8sContext(cluster)
 			}
 		} else {
-			log.Fatal("Please pass a valid clusterName or check if the AWS account has a mapping inside the tool for the account and the region")
+			log.Fatalln("Please pass a valid clusterName or check if the AWS account has a mapping inside the tool for the account and the region")
 		}
 
 		// storing all the instances with their private DNS's for the passed ASG for the AWS profile mapped for the cluster passed
@@ -69,7 +69,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		awsGetterObj := &aws.ConfigGetter{ConfigClientInterface: &aws.Config{}}
 		cfg, err := awsGetterObj.GetConfig(context.TODO(), config.WithRegion(awsRegion), config.WithSharedConfigProfile(awsAccount))
 		if err != nil {
-			log.Fatal("there was an error while initializing the aws config, please check your aws credentials")
+			log.Fatalln("there was an error while initializing the aws config, please check your aws credentials")
 		}
 
 		awsInstances := aws.AwsInstances{}
@@ -99,7 +99,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 			}
 			_, err := awsUpdateAsgObj.Update(context.TODO(), cfg)
 			if err != nil {
-				log.Fatal("Updation of the Autoscaling group to make the maximum nodes to be equal to the current number of nodes failed," +
+				log.Fatalln("Updation of the Autoscaling group to make the maximum nodes to be equal to the current number of nodes failed," +
 					" skipping, tainting and draining of the ASG")
 			}
 			log.Printf("The ASG's max size was set to the current desired size, current max size after updation: %d\n",

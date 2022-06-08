@@ -23,7 +23,7 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln("There was an error reading config from the config file")
 		}
 
 		log.Println("Config file used:", viper.ConfigFileUsed())
