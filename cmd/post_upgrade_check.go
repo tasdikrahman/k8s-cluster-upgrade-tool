@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
@@ -27,8 +26,14 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 			log.Fatal(err)
 		}
 
+		log.Println("Config file used:", viper.ConfigFileUsed())
+		log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
+		log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
+		log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
+		log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
+
 		if configuration.IsClusterNameValid(args[0]) {
-			fmt.Println("Setting kubernetes context to", args[0])
+			log.Println("Setting kubernetes context to", args[0])
 			setK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
@@ -42,7 +47,7 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 			log.Fatal(err)
 		}
 
-		fmt.Println("running post upgrade checks")
+		log.Println("running post upgrade checks")
 		checkAwsNodeComponentVersion(args[0], configuration)
 		checkKubeProxyComponentVersion(args[0], configuration)
 		checkCoreDnsComponentVersion(args[0], configuration)
@@ -65,109 +70,109 @@ func setK8sContext(clusterName string) {
 	cmd := exec.Command(command, arg01, arg02, clusterName)
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error setting kube context to the cluster selected")
 	}
 }
 
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
-	fmt.Println("Checking aws-node version")
+	log.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "aws-node")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error parsing the image from the parsed command output")
 	}
 	if imageTag == viper.Get("components.aws-node") {
-		fmt.Printf("AWS Node Version on %s ✓ \n", viper.Get("components.aws-node"))
+		log.Printf("AWS Node Version on %s ✓ \n", viper.Get("components.aws-node"))
 	} else {
-		fmt.Printf("aws-node needs to be updated, is currently on %s, desired version: %s\n", imageTag,
+		log.Printf("aws-node needs to be updated, is currently on %s, desired version: %s\n", imageTag,
 			viper.Get("components.aws-node"))
 	}
 }
 
 func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations) {
-	fmt.Println("Checking kube-proxy version")
+	log.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "kube-proxy")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error parsing the image from the parsed command output")
 	}
 
 	if imageTag == viper.Get("components.kube-proxy") {
-		fmt.Printf("kube-proxy on %s ✓ \n", viper.Get("components.kube-proxy"))
+		log.Printf("kube-proxy on %s ✓ \n", viper.Get("components.kube-proxy"))
 	} else {
-		fmt.Printf("kube-proxy needs to be updated, is currently on %s, desired version: %s\n", imageTag,
+		log.Printf("kube-proxy needs to be updated, is currently on %s, desired version: %s\n", imageTag,
 			viper.Get("components.kube-proxy"))
 	}
 }
 
 func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations) {
-	fmt.Println("Checking coredns version")
+	log.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "coredns")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error parsing the image from the parsed command output")
 	}
 
 	if imageTag == viper.Get("components.coredns") {
-		fmt.Printf("core-dns on %s ✓ \n", viper.Get("components.coredns"))
+		log.Printf("core-dns on %s ✓ \n", viper.Get("components.coredns"))
 	} else {
-		fmt.Printf("core-dns needs to be updated, is currently on %s, desired version: %s\n", imageTag,
+		log.Printf("core-dns needs to be updated, is currently on %s, desired version: %s\n", imageTag,
 			viper.Get("components.coredns"))
 	}
 }
 
 func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations) {
-	fmt.Println("Checking cluster-autoscaler version")
+	log.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
 	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "cluster-autoscaler")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error: there was an error parsing the image from the parsed command output")
 	}
 
 	if imageTag == viper.Get("components.cluster-autoscaler") {
-		fmt.Printf("cluster-autoscaler on %s ✓ \n", viper.Get("components.cluster-autoscaler"))
+		log.Printf("cluster-autoscaler on %s ✓ \n", viper.Get("components.cluster-autoscaler"))
 	} else {
-		fmt.Printf("cluster-autoscaler needs to be updated, is currently on %s, desired version: %s\n", imageTag,
+		log.Printf("cluster-autoscaler needs to be updated, is currently on %s, desired version: %s\n", imageTag,
 			viper.Get("components.cluster-autoscaler"))
 	}
 }

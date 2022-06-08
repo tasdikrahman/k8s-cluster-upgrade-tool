@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/k8s"
 	"log"
@@ -25,6 +26,12 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		log.Println("Config file used:", viper.ConfigFileUsed())
+		log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
+		log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
+		log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
+		log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
 
 		err = configuration.ValidatePassedComponentVersions(args[1], args[2])
 		if err != nil {

@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"github.com/spf13/viper"
-	"log"
 )
 
 const (
@@ -135,7 +134,6 @@ func Read(fileName, fileType, filePath string) (config Configurations, err error
 			return Configurations{}, errors.New("error reading from config file")
 		}
 	}
-	log.Println("Config file used:", viper.ConfigFileUsed())
 
 	err = viper.Unmarshal(&config)
 	if err != nil {
@@ -151,10 +149,6 @@ func Read(fileName, fileType, filePath string) (config Configurations, err error
 		return Configurations{}, errors.New("one of the clusterlist elements has either Name, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
 	}
 
-	log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
-	log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
-	log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
-	log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
 	return config, nil
 }
 

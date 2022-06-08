@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	toolConfig "k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/aws"
 	"log"
@@ -43,6 +44,12 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		log.Println("Config file used:", viper.ConfigFileUsed())
+		log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
+		log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
+		log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
+		log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
 
 		// validate the cluster name and mapping if it's present
 		if configuration.IsClusterNameValid(cluster) {
