@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/spf13/cobra"
-	"log"
-
+	"github.com/spf13/viper"
 	toolConfig "k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/aws"
+	"log"
 )
 
 var DryRunFlag bool
@@ -38,25 +38,38 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		asg, _ := cmd.Flags().GetString("autoscaling-group")
 		dryRun, _ := cmd.Flags().GetBool("dry-run")
 
+		// Read config from file
+		configFileName, configFileType, configFilePath := toolConfig.FileMetadata()
+		configuration, err := toolConfig.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			log.Fatalln("There was an error reading config from the config file")
+		}
+
+		log.Println("Config file used:", viper.ConfigFileUsed())
+		log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
+		log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
+		log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
+		log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
+
 		// validate the cluster name and mapping if it's present
-		if toolConfig.Configuration.IsClusterNameValid(cluster) {
-			_, _, err := toolConfig.Configuration.GetAwsAccountAndRegionForCluster(cluster)
+		if configuration.IsClusterNameValid(cluster) {
+			_, _, err := configuration.GetAwsAccountAndRegionForCluster(cluster)
 			if err == nil {
 				log.Println("Setting kubernetes context to", cluster)
 				setK8sContext(cluster)
 			}
 		} else {
-			log.Fatal("Please pass a valid clusterName or check if the AWS account has a mapping inside the tool for the account and the region")
+			log.Fatalln("Please pass a valid clusterName or check if the AWS account has a mapping inside the tool for the account and the region")
 		}
 
 		// storing all the instances with their private DNS's for the passed ASG for the AWS profile mapped for the cluster passed
-		awsAccount, awsRegion, _ := toolConfig.Configuration.GetAwsAccountAndRegionForCluster(cluster)
+		awsAccount, awsRegion, _ := configuration.GetAwsAccountAndRegionForCluster(cluster)
 
 		// create aws config
 		awsGetterObj := &aws.ConfigGetter{ConfigClientInterface: &aws.Config{}}
 		cfg, err := awsGetterObj.GetConfig(context.TODO(), config.WithRegion(awsRegion), config.WithSharedConfigProfile(awsAccount))
 		if err != nil {
-			log.Fatal("there was an error while initializing the aws config, please check your aws credentials")
+			log.Fatalln("there was an error while initializing the aws config, please check your aws credentials")
 		}
 
 		awsInstances := aws.AwsInstances{}
@@ -86,7 +99,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 			}
 			_, err := awsUpdateAsgObj.Update(context.TODO(), cfg)
 			if err != nil {
-				log.Fatal("Updation of the Autoscaling group to make the maximum nodes to be equal to the current number of nodes failed," +
+				log.Fatalln("Updation of the Autoscaling group to make the maximum nodes to be equal to the current number of nodes failed," +
 					" skipping, tainting and draining of the ASG")
 			}
 			log.Printf("The ASG's max size was set to the current desired size, current max size after updation: %d\n",

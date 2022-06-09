@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"github.com/spf13/viper"
-	"log"
 )
 
 const (
@@ -12,8 +11,6 @@ const (
 	FilePath = "$HOME/.k8s-cluster-upgrade-tool"
 )
 
-var Configuration Configurations
-
 type Configurations struct {
 	Components  ComponentVersionConfigurations `mapstructure:"components"`
 	ClusterList []ClusterListConfiguration     `mapstructure:"clusterlist"`
@@ -21,9 +18,18 @@ type Configurations struct {
 
 // reference: https://stackoverflow.com/questions/63889004/how-to-access-specific-items-in-an-array-from-viper
 type ClusterListConfiguration struct {
-	Name       string `mapstructure:"Name"`
-	AwsRegion  string `mapstructure:"AwsRegion"`
-	AwsAccount string `mapstructure:"AwsAccount"`
+	Name                    string    `mapstructure:"Name"`
+	AwsRegion               string    `mapstructure:"AwsRegion"`
+	AwsAccount              string    `mapstructure:"AwsAccount"`
+	AwsNodeObject           K8sObject `mapstructure:"AwsNodeObject"`
+	ClusterAutoscalerObject K8sObject `mapstructure:"ClusterAutoscalerObject"`
+	CoreDnsObject           K8sObject `mapstructure:"CoreDnsObject"`
+	KubeProxyObject         K8sObject `mapstructure:"KubeProxyObject"`
+}
+
+type K8sObject struct {
+	Name string `mapstructure:"name"`
+	Type string `mapstructure:"type"`
 }
 
 type ComponentVersionConfigurations struct {
@@ -31,6 +37,25 @@ type ComponentVersionConfigurations struct {
 	ClusterAutoscaler string `mapstructure:"cluster-autoscaler"`
 	CoreDns           string `mapstructure:"coredns"`
 	KubeProxy         string `mapstructure:"kube-proxy"`
+}
+
+// TODO Add spec to check for unique cluster name list in config
+func (c Configurations) IsClusterListConfigurationValid() bool {
+	valid := true
+	for _, cluster := range c.ClusterList {
+		if cluster.Name == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.Name == "" || cluster.AwsNodeObject.Type == "" || cluster.ClusterAutoscalerObject.Name == "" || cluster.ClusterAutoscalerObject.Type == "" || cluster.CoreDnsObject.Name == "" || cluster.CoreDnsObject.Type == "" || cluster.KubeProxyObject.Name == "" || cluster.KubeProxyObject.Type == "" {
+			valid = false
+		}
+	}
+	return valid
+}
+
+func (c Configurations) IsComponentVersionConfigurationsValid() bool {
+	valid := true
+	if c.Components.CoreDns == "" || c.Components.AwsNode == "" || c.Components.ClusterAutoscaler == "" || c.Components.KubeProxy == "" {
+		valid = false
+	}
+	return valid
 }
 
 func (c Configurations) IsClusterNameValid(clusterName string) bool {
@@ -41,6 +66,26 @@ func (c Configurations) IsClusterNameValid(clusterName string) bool {
 		}
 	}
 	return contains
+}
+
+func (c Configurations) GetK8sObjectNameAndObjectTypeForCluster(clusterName, k8sObject string) (objectName, objectType string, err error) {
+	for _, cluster := range c.ClusterList {
+		if cluster.Name == clusterName {
+			switch k8sObject {
+			case "aws-node":
+				return cluster.AwsNodeObject.Name, cluster.AwsNodeObject.Type, nil
+			case "cluster-autoscaler":
+				return cluster.ClusterAutoscalerObject.Name, cluster.ClusterAutoscalerObject.Type, nil
+			case "kube-proxy":
+				return cluster.KubeProxyObject.Name, cluster.KubeProxyObject.Type, nil
+			case "coredns":
+				return cluster.CoreDnsObject.Name, cluster.CoreDnsObject.Type, nil
+			default:
+				return "", "", errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
+			}
+		}
+	}
+	return "", "", errors.New("please check if you passed a valid cluster name")
 }
 
 func (c Configurations) GetAwsAccountAndRegionForCluster(clusterName string) (awsAccount, awsRegion string, err error) {
@@ -77,41 +122,34 @@ func (c Configurations) ValidatePassedComponentVersions(componentName, component
 	return nil
 }
 
-func Read(fileName, fileType, filePath string) error {
+func Read(fileName, fileType, filePath string) (config Configurations, err error) {
 	viper.SetConfigName(fileName)
 	viper.SetConfigType(fileType)
 	viper.AddConfigPath(filePath)
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8s-cluster-upgrade-tool/config.yaml if not")
+			return Configurations{}, errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8s-cluster-upgrade-tool/config.yaml if not")
 		} else {
-			return errors.New("error reading from config file")
+			return Configurations{}, errors.New("error reading from config file")
 		}
 	}
-	log.Println("Config file used:", viper.ConfigFileUsed())
 
-	err = viper.Unmarshal(&Configuration)
+	err = viper.Unmarshal(&config)
 	if err != nil {
-		return errors.New("error un marshaling config file")
+		return Configurations{}, errors.New("error un marshaling config file")
 	}
 
 	// check for the mandatory config file variables being read
-	if viper.Get("components.aws-node") == nil || viper.Get("components.coredns") == nil || viper.Get("components.kube-proxy") == nil || viper.Get("components.cluster-autoscaler") == nil {
-		return errors.New("mandatory component version of either aws-node, coredns, kube-proxy or cluster-autoscaler not set in config file")
+	if !config.IsComponentVersionConfigurationsValid() {
+		return Configurations{}, errors.New("mandatory component version of either aws-node, coredns, kube-proxy or cluster-autoscaler not set in config file")
 	}
 
-	for _, cluster := range Configuration.ClusterList {
-		if cluster.Name == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" {
-			return errors.New("one of the clusterlist elements has either Name, AwsRegion or AwsAccount missing")
-		}
+	if !config.IsClusterListConfigurationValid() {
+		return Configurations{}, errors.New("one of the clusterlist elements has either Name, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
 	}
 
-	log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
-	log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
-	log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
-	log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
-	return nil
+	return config, nil
 }
 
 func FileMetadata() (fileName, filePath, fileType string) {

@@ -12,6 +12,30 @@ clusterlist:
 - Name: "cluster1"
   AwsRegion: "region1"
   AwsAccount: "account1"
+  AwsNodeObject:
+    type: "daemonset"
+    name: "aws-node"
+  ClusterAutoscalerObject:
+    type: "deployment"
+    name: "cluster-autoscaler"
+  CoreDnsObject:
+    type: "coredns"
+    name: "deployment"
+  KubeProxyObject:
+    name: "kube-proxy"
+    type: "daemonset"
 - Name: "cluster2"
   AwsRegion: "region1"
   AwsAccount: "account1"
+  AwsNodeObject:
+    type: "daemonset"
+    name: "aws-node"
+  ClusterAutoscalerObject:
+    type: "deployment"
+    name: "cluster-autoscaler"
+  CoreDnsObject:
+    name: "coredns"
+    type: "deployment"
+  KubeProxyObject:
+    name: "kube-proxy"
+    type: "daemonset"

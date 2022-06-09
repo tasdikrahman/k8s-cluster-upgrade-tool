@@ -3,9 +3,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
+	"github.com/spf13/viper"
 	"k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/k8s"
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -19,28 +20,63 @@ Usage:
 $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-version`,
 	Args: cobra.ExactArgs(3),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		err := config.Configuration.ValidatePassedComponentVersions(args[1], args[2])
+		// Read config from file
+		configFileName, configFileType, configFilePath := config.FileMetadata()
+		configuration, err := config.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			log.Fatalln("There was an error reading config from the config file")
+		}
+
+		log.Println("Config file used:", viper.ConfigFileUsed())
+		log.Printf("aws-node version read from config: %s\n", viper.Get("components.aws-node"))
+		log.Printf("coredns version read from config: %s", viper.Get("components.coredns"))
+		log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
+		log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
+
+		err = configuration.ValidatePassedComponentVersions(args[1], args[2])
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
-		if config.Configuration.IsClusterNameValid(args[0]) {
-			fmt.Println("Setting kubernetes context to", args[0])
+
+		if configuration.IsClusterNameValid(args[0]) {
+			log.Println("Setting kubernetes context to", args[0])
 			setK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		// Read config from file
+		configFileName, configFileType, configFilePath := config.FileMetadata()
+		configuration, err := config.Read(configFileName, configFileType, configFilePath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		componentName, imageTag := args[1], args[2]
 		switch componentName {
 		case "coredns":
-			setComponentVersion(imageTag, componentName, "deployment.apps/coredns", "deployment")
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "coredns")
+			if err != nil {
+				log.Fatalln("There was an error reading config from the config file")
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		case "kube-proxy":
-			setComponentVersion(imageTag, componentName, "daemonset.apps/kube-proxy", "daemonset")
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "kube-proxy")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
 		case "aws-node":
-			setComponentVersion(imageTag, componentName, "daemonset.apps/aws-node", "daemonset")
-		case "cluster-autoscaler":
-			log.Printf("for %s, please update the component via helm as we maintain the charts for the same.", componentName)
+			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "aws-node")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
+		// TODO: As of now this assumes that the container name to which we set the image, will be the same as the deployment name
+		// which needs to be configurable from the config
+		default:
+			log.Println("please check the passed components, if passed with cluster auto scaler support will be added soon")
 		}
 	},
 }
@@ -56,12 +92,12 @@ func setComponentVersion(imageTag string, componentName string, k8sSetQueryCmdOb
 	args := strings.Fields(k8s.KubectlGetImageCommand(componentK8sObject, componentName))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatal("There was an error while fetching the image of the component from the cluster: ", err)
+		log.Fatalln("There was an error while fetching the image of the component from the cluster: ", err)
 	}
 
 	imagePrefix, err := k8s.ParseComponentImage(string(output), "imagePrefix")
 	if err != nil {
-		log.Fatal("There was an error while parsing the image prefix step: ", err)
+		log.Fatalln("There was an error while parsing the image prefix step: ", err)
 	}
 	containerImage := imagePrefix + ":" + imageTag
 
