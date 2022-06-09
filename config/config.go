@@ -18,7 +18,7 @@ type Configurations struct {
 
 // reference: https://stackoverflow.com/questions/63889004/how-to-access-specific-items-in-an-array-from-viper
 type ClusterListConfiguration struct {
-	Name                    string    `mapstructure:"Name"`
+	ClusterName             string    `mapstructure:"ClusterName"`
 	AwsRegion               string    `mapstructure:"AwsRegion"`
 	AwsAccount              string    `mapstructure:"AwsAccount"`
 	AwsNodeObject           K8sObject `mapstructure:"AwsNodeObject"`
@@ -28,8 +28,8 @@ type ClusterListConfiguration struct {
 }
 
 type K8sObject struct {
-	Name string `mapstructure:"name"`
-	Type string `mapstructure:"type"`
+	DeploymentName string `mapstructure:"DeploymentName"`
+	ObjectType     string `mapstructure:"ObjectType"`
 }
 
 type ComponentVersionConfigurations struct {
@@ -43,7 +43,7 @@ type ComponentVersionConfigurations struct {
 func (c Configurations) IsClusterListConfigurationValid() bool {
 	valid := true
 	for _, cluster := range c.ClusterList {
-		if cluster.Name == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.Name == "" || cluster.AwsNodeObject.Type == "" || cluster.ClusterAutoscalerObject.Name == "" || cluster.ClusterAutoscalerObject.Type == "" || cluster.CoreDnsObject.Name == "" || cluster.CoreDnsObject.Type == "" || cluster.KubeProxyObject.Name == "" || cluster.KubeProxyObject.Type == "" {
+		if cluster.ClusterName == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" {
 			valid = false
 		}
 	}
@@ -61,7 +61,7 @@ func (c Configurations) IsComponentVersionConfigurationsValid() bool {
 func (c Configurations) IsClusterNameValid(clusterName string) bool {
 	contains := false
 	for _, cluster := range c.ClusterList {
-		if cluster.Name == clusterName {
+		if cluster.ClusterName == clusterName {
 			contains = true
 		}
 	}
@@ -70,16 +70,16 @@ func (c Configurations) IsClusterNameValid(clusterName string) bool {
 
 func (c Configurations) GetK8sObjectNameAndObjectTypeForCluster(clusterName, k8sObject string) (objectName, objectType string, err error) {
 	for _, cluster := range c.ClusterList {
-		if cluster.Name == clusterName {
+		if cluster.ClusterName == clusterName {
 			switch k8sObject {
 			case "aws-node":
-				return cluster.AwsNodeObject.Name, cluster.AwsNodeObject.Type, nil
+				return cluster.AwsNodeObject.DeploymentName, cluster.AwsNodeObject.ObjectType, nil
 			case "cluster-autoscaler":
-				return cluster.ClusterAutoscalerObject.Name, cluster.ClusterAutoscalerObject.Type, nil
+				return cluster.ClusterAutoscalerObject.DeploymentName, cluster.ClusterAutoscalerObject.ObjectType, nil
 			case "kube-proxy":
-				return cluster.KubeProxyObject.Name, cluster.KubeProxyObject.Type, nil
+				return cluster.KubeProxyObject.DeploymentName, cluster.KubeProxyObject.ObjectType, nil
 			case "coredns":
-				return cluster.CoreDnsObject.Name, cluster.CoreDnsObject.Type, nil
+				return cluster.CoreDnsObject.DeploymentName, cluster.CoreDnsObject.ObjectType, nil
 			default:
 				return "", "", errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
 			}
@@ -90,7 +90,7 @@ func (c Configurations) GetK8sObjectNameAndObjectTypeForCluster(clusterName, k8s
 
 func (c Configurations) GetAwsAccountAndRegionForCluster(clusterName string) (awsAccount, awsRegion string, err error) {
 	for _, cluster := range c.ClusterList {
-		if cluster.Name == clusterName {
+		if cluster.ClusterName == clusterName {
 			return cluster.AwsAccount, cluster.AwsRegion, nil
 		}
 	}
@@ -146,7 +146,7 @@ func Read(fileName, fileType, filePath string) (config Configurations, err error
 	}
 
 	if !config.IsClusterListConfigurationValid() {
-		return Configurations{}, errors.New("one of the clusterlist elements has either Name, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
+		return Configurations{}, errors.New("one of the clusterlist elements has either ClusterName, AwsRegion, AwsAccount, AwsNodeObject, ClusterAutoscalerObject, KubeProxyObject, CoreDnsObject is missing")
 	}
 
 	return config, nil
