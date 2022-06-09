@@ -73,12 +73,10 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 				log.Println(err)
 			}
 			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
-		case "cluster-autoscaler":
-			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "cluster-autoscaler")
-			if err != nil {
-				log.Println(err)
-			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
+		// TODO: As of now this assumes that the container name to which we set the image, will be the same as the deployment name
+		// which needs to be configurable from the config
+		default:
+			log.Println("please check the passed components, if passed with cluster auto scaler support will be added soon")
 		}
 	},
 }
