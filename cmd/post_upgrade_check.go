@@ -77,7 +77,7 @@ func setK8sContext(clusterName string) {
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "aws-node")
+	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "aws-node")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
@@ -102,7 +102,7 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "kube-proxy")
+	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "kube-proxy")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
@@ -128,7 +128,7 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "coredns")
+	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "coredns")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
@@ -154,7 +154,7 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "cluster-autoscaler")
+	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "cluster-autoscaler")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
