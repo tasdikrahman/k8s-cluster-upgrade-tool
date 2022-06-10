@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
+func TestConfigurations_IsClusterListConfigurationValid(t *testing.T) {
 	tests := []struct {
 		name          string
 		configuration Configurations
@@ -27,18 +27,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 					{
@@ -48,18 +52,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 				},
@@ -77,18 +85,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 					{
@@ -98,18 +110,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "",
+							ContainerName:  "container-name",
 						},
 					},
 				},
@@ -127,18 +143,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 					{
@@ -148,14 +168,17 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 					},
 				},
@@ -172,18 +195,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 					{
@@ -193,14 +220,17 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 					},
 				},
@@ -217,18 +247,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 					{
@@ -238,14 +272,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						CoreDnsObject: K8sObject{
+							DeploymentName: "coredns",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 				},
@@ -262,18 +304,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 					{
@@ -283,14 +329,22 @@ func TestConfigurations_IsK8sObjectAttributeValid(t *testing.T) {
 						AwsNodeObject: K8sObject{
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						CoreDnsObject: K8sObject{
+							DeploymentName: "coredns",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
 						},
 					},
 				},
@@ -698,7 +752,7 @@ func TestRead(t *testing.T) {
 		err  error
 	}{
 		{"when the config file is present with all the config keys and read successfully",
-			File{fileName: "config", fileType: "yaml", dirName: "/tmp", data: "---\ncomponents:\n  aws-node: \"aws-node-version\"\n  cluster-autoscaler: \"cluster-autoscaler-version\"\n  coredns: \"core-dns-version\"\n  kube-proxy: \"kube-proxy-version\"\nclusterlist:\n- ClusterName: \"cluster1\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n  AwsNodeObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"aws-node\"\n  ClusterAutoscalerObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"cluster-autoscaler\"\n  CoreDnsObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"coredns\"\n  KubeProxyObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"kube-proxy\"\n- ClusterName: \"cluster2\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n  AwsNodeObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"aws-node\"\n  ClusterAutoscalerObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"cluster-autoscaler\"\n  CoreDnsObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"coredns\"\n  KubeProxyObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"kube-proxy\"", writeFile: true},
+			File{fileName: "config", fileType: "yaml", dirName: "/tmp", data: "---\ncomponents:\n  aws-node: \"aws-node-version\"\n  cluster-autoscaler: \"cluster-autoscaler-version\"\n  coredns: \"core-dns-version\"\n  kube-proxy: \"kube-proxy-version\"\nclusterlist:\n- ClusterName: \"cluster1\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n  AwsNodeObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"aws-node\"\n    ContainerName: \"container-name\"\n  ClusterAutoscalerObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"cluster-autoscaler\"\n    ContainerName: \"container-name\"\n  CoreDnsObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"coredns\"\n    ContainerName: \"container-name\"\n  KubeProxyObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"kube-proxy\"\n    ContainerName: \"container-name\"\n- ClusterName: \"cluster2\"\n  AwsRegion: \"region1\"\n  AwsAccount: \"account1\"\n  AwsNodeObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"aws-node\"\n    ContainerName: \"container-name\"\n  ClusterAutoscalerObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"cluster-autoscaler\"\n    ContainerName: \"container-name\"\n  CoreDnsObject:\n    ObjectType: \"deployment\"\n    DeploymentName: \"coredns\"\n    ContainerName: \"container-name\"\n  KubeProxyObject:\n    ObjectType: \"daemonset\"\n    DeploymentName: \"kube-proxy\"\n    ContainerName: \"container-name\"", writeFile: true},
 			nil,
 		},
 		{"when the config file is present and read successfully, but one of the keys for cluster list config is not present with the value",

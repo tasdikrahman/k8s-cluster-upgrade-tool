@@ -15,27 +15,35 @@ clusterlist:
   AwsNodeObject:
     ObjectType: "daemonset"
     DeploymentName: "aws-node"
+    ContainerName: "aws-node"
   ClusterAutoscalerObject:
     ObjectType: "deployment"
     DeploymentName: "cluster-autoscaler"
+    ContainerName: "aws-cluster-autoscaler"
   CoreDnsObject:
     ObjectType: "coredns"
     DeploymentName: "deployment"
+    ContainerName: "coredns"
   KubeProxyObject:
     ObjectType: "kube-proxy"
     DeploymentName: "daemonset"
+    ContainerName: "kube-proxy"
 - ClusterName: "cluster2"
   AwsRegion: "region1"
   AwsAccount: "account1"
   AwsNodeObject:
     ObjectType: "daemonset"
     DeploymentName: "aws-node"
+    ContainerName: "aws-node"
   ClusterAutoscalerObject:
     ObjectType: "deployment"
     DeploymentName: "cluster-autoscaler"
+    ContainerName: "aws-cluster-autoscaler"
   CoreDnsObject:
     ObjectType: "coredns"
     DeploymentName: "deployment"
+    ContainerName: "coredns"
   KubeProxyObject:
     ObjectType: "kube-proxy"
     DeploymentName: "daemonset"
+    ContainerName: "kube-proxy"

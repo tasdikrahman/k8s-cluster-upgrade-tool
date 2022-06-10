@@ -30,6 +30,7 @@ type ClusterListConfiguration struct {
 type K8sObject struct {
 	DeploymentName string `mapstructure:"DeploymentName"`
 	ObjectType     string `mapstructure:"ObjectType"`
+	ContainerName  string `mapstructure:"ContainerName"`
 }
 
 type ComponentVersionConfigurations struct {
@@ -43,7 +44,7 @@ type ComponentVersionConfigurations struct {
 func (c Configurations) IsClusterListConfigurationValid() bool {
 	valid := true
 	for _, cluster := range c.ClusterList {
-		if cluster.ClusterName == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" {
+		if cluster.ClusterName == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.AwsNodeObject.ContainerName == "" || cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.ClusterAutoscalerObject.ContainerName == "" || cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.CoreDnsObject.ContainerName == "" || cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" || cluster.KubeProxyObject.ContainerName == "" {
 			valid = false
 		}
 	}
