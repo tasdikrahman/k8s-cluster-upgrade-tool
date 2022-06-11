@@ -34,7 +34,7 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 
 		if configuration.IsClusterNameValid(args[0]) {
 			log.Println("Setting kubernetes context to", args[0])
-			setK8sContext(args[0])
+			k8s.SetK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
@@ -59,19 +59,6 @@ func init() {
 	RootCmd.AddCommand(postUpgradeCheckCmd)
 
 	// TODO Move the flags to required ones similar to taint-and-drain-asg command
-}
-
-func setK8sContext(clusterName string) {
-	command := "kubectl"
-	arg01 := "config"
-	arg02 := "use-context"
-
-	// TODO: change this to use client-go
-	cmd := exec.Command(command, arg01, arg02, clusterName)
-	err := cmd.Run()
-	if err != nil {
-		log.Fatalln("Error setting kube context to the cluster selected")
-	}
 }
 
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {

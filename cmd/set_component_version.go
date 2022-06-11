@@ -40,7 +40,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 
 		if configuration.IsClusterNameValid(args[0]) {
 			log.Println("Setting kubernetes context to", args[0])
-			setK8sContext(args[0])
+			k8s.SetK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}

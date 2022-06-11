@@ -3,6 +3,8 @@ package k8s
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os/exec"
 	"strings"
 )
 
@@ -63,4 +65,18 @@ func KubectlDrainNodeCommand(node string) string {
 	--delete-local-data
 	%s
 	`, node)
+}
+
+// TODO add spec for this
+func SetK8sContext(clusterName string) {
+	command := "kubectl"
+	arg01 := "config"
+	arg02 := "use-context"
+
+	// TODO: change this to use client-go
+	cmd := exec.Command(command, arg01, arg02, clusterName)
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalln("Error setting kube context to the cluster selected")
+	}
 }
