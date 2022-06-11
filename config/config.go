@@ -40,11 +40,24 @@ type ComponentVersionConfigurations struct {
 	KubeProxy         string `mapstructure:"kube-proxy"`
 }
 
-// TODO Add spec to check for unique cluster name list in config
 func (c Configurations) IsClusterListConfigurationValid() bool {
 	valid := true
+	clusterNameMap := map[string]string{}
 	for _, cluster := range c.ClusterList {
-		if cluster.ClusterName == "" || cluster.AwsRegion == "" || cluster.AwsAccount == "" || cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.AwsNodeObject.ContainerName == "" || cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.ClusterAutoscalerObject.ContainerName == "" || cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.CoreDnsObject.ContainerName == "" || cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" || cluster.KubeProxyObject.ContainerName == "" {
+		if _, present := clusterNameMap[cluster.ClusterName]; present {
+			valid = false
+		}
+		clusterNameMap[cluster.ClusterName] = "present"
+
+		clusterName := cluster.ClusterName == ""
+		awsRegion := cluster.AwsRegion == ""
+		awsAccount := cluster.AwsAccount == ""
+		awsNodeObject := cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.AwsNodeObject.ContainerName == ""
+		clusterAutoscaler := cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.ClusterAutoscalerObject.ContainerName == ""
+		coreDns := cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.CoreDnsObject.ContainerName == ""
+		kubeProxy := cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" || cluster.KubeProxyObject.ContainerName == ""
+
+		if clusterName || awsRegion || awsAccount || awsNodeObject || clusterAutoscaler || coreDns || kubeProxy {
 			valid = false
 		}
 	}

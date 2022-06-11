@@ -137,31 +137,6 @@ func TestConfigurations_IsClusterListConfigurationValid(t *testing.T) {
 			configuration: Configurations{
 				ClusterList: []ClusterListConfiguration{
 					{
-						ClusterName: "cluster1",
-						AwsRegion:   "region",
-						AwsAccount:  "account",
-						AwsNodeObject: K8sObject{
-							DeploymentName: "aws-node",
-							ObjectType:     "daemonset",
-							ContainerName:  "container-name",
-						},
-						ClusterAutoscalerObject: K8sObject{
-							DeploymentName: "cluster-autoscaler",
-							ObjectType:     "deployment",
-							ContainerName:  "container-name",
-						},
-						KubeProxyObject: K8sObject{
-							DeploymentName: "kube-proxy",
-							ObjectType:     "daemonset",
-							ContainerName:  "container-name",
-						},
-						CoreDnsObject: K8sObject{
-							DeploymentName: "coredns",
-							ObjectType:     "deployment",
-							ContainerName:  "container-name",
-						},
-					},
-					{
 						ClusterName: "cluster2",
 						AwsRegion:   "region",
 						AwsAccount:  "account",
@@ -178,6 +153,38 @@ func TestConfigurations_IsClusterListConfigurationValid(t *testing.T) {
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+					},
+				},
+			},
+			result: false,
+		},
+		{
+			name: "when the config passed has one of the attributes of k8sObject attribute missing",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						ClusterName: "cluster1",
+						AwsRegion:   "region",
+						AwsAccount:  "account",
+						AwsNodeObject: K8sObject{
+							DeploymentName: "aws-node",
+							ObjectType:     "daemonset",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							DeploymentName: "cluster-autoscaler",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
+						},
+						KubeProxyObject: K8sObject{
+							DeploymentName: "kube-proxy",
+							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						CoreDnsObject: K8sObject{
+							DeploymentName: "coredns",
+							ObjectType:     "deployment",
 							ContainerName:  "container-name",
 						},
 					},
@@ -324,6 +331,64 @@ func TestConfigurations_IsClusterListConfigurationValid(t *testing.T) {
 					},
 					{
 						ClusterName: "cluster2",
+						AwsRegion:   "region",
+						AwsAccount:  "account",
+						AwsNodeObject: K8sObject{
+							DeploymentName: "aws-node",
+							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							DeploymentName: "cluster-autoscaler",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
+						},
+						KubeProxyObject: K8sObject{
+							DeploymentName: "kube-proxy",
+							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						CoreDnsObject: K8sObject{
+							DeploymentName: "coredns",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
+						},
+					},
+				},
+			},
+			result: false,
+		},
+		{
+			name: "when the config passed has two clusters added with the same clusterName attribute",
+			configuration: Configurations{
+				ClusterList: []ClusterListConfiguration{
+					{
+						ClusterName: "cluster1",
+						AwsRegion:   "region",
+						AwsAccount:  "account",
+						AwsNodeObject: K8sObject{
+							DeploymentName: "aws-node",
+							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						ClusterAutoscalerObject: K8sObject{
+							DeploymentName: "cluster-autoscaler",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
+						},
+						KubeProxyObject: K8sObject{
+							DeploymentName: "kube-proxy",
+							ObjectType:     "daemonset",
+							ContainerName:  "container-name",
+						},
+						CoreDnsObject: K8sObject{
+							DeploymentName: "coredns",
+							ObjectType:     "deployment",
+							ContainerName:  "container-name",
+						},
+					},
+					{
+						ClusterName: "cluster1",
 						AwsRegion:   "region",
 						AwsAccount:  "account",
 						AwsNodeObject: K8sObject{
