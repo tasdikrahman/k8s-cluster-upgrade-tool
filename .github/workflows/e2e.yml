@@ -1,0 +1,28 @@
+name: Create Cluster
+
+on: pull_request
+
+jobs:
+  create-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.2.0
+        with:
+          node_image: v1.20.15
+
+      - name: Get kind cluster information
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+
+#      - name: Set up Helm
+#        uses: azure/setup-helm@v1
+#        with:
+#          version: v3.8.1
+
+      - name: Setup cluster-autoscaler
+        run: cat e2e/cluster-autoscaler-manifest.yml | kubectl apply -f -
+
