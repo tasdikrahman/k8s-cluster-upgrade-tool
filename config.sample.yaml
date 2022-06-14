@@ -16,18 +16,22 @@ clusterlist:
     ObjectType: "daemonset"
     DeploymentName: "aws-node"
     ContainerName: "aws-node"
+    Namespace: "kube-system"
   ClusterAutoscalerObject:
     ObjectType: "deployment"
     DeploymentName: "cluster-autoscaler"
     ContainerName: "aws-cluster-autoscaler"
+    Namespace: "kube-system"
   CoreDnsObject:
     ObjectType: "coredns"
     DeploymentName: "deployment"
     ContainerName: "coredns"
+    Namespace: "kube-system"
   KubeProxyObject:
     ObjectType: "kube-proxy"
     DeploymentName: "daemonset"
     ContainerName: "kube-proxy"
+    Namespace: "kube-system"
 - ClusterName: "cluster2"
   AwsRegion: "region1"
   AwsAccount: "account1"
@@ -35,15 +39,19 @@ clusterlist:
     ObjectType: "daemonset"
     DeploymentName: "aws-node"
     ContainerName: "aws-node"
+    Namespace: "kube-system"
   ClusterAutoscalerObject:
     ObjectType: "deployment"
     DeploymentName: "cluster-autoscaler"
     ContainerName: "aws-cluster-autoscaler"
+    Namespace: "kube-system"
   CoreDnsObject:
     ObjectType: "coredns"
     DeploymentName: "deployment"
     ContainerName: "coredns"
+    Namespace: "kube-system"
   KubeProxyObject:
     ObjectType: "kube-proxy"
     DeploymentName: "daemonset"
     ContainerName: "kube-proxy"
+    Namespace: "kube-system"

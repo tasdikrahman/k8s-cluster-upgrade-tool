@@ -31,6 +31,7 @@ type K8sObject struct {
 	DeploymentName string `mapstructure:"DeploymentName"`
 	ObjectType     string `mapstructure:"ObjectType"`
 	ContainerName  string `mapstructure:"ContainerName"`
+	Namespace      string `mapstructure:"ContainerName"`
 }
 
 type ComponentVersionConfigurations struct {
@@ -52,10 +53,10 @@ func (c Configurations) IsClusterListConfigurationValid() bool {
 		clusterName := cluster.ClusterName == ""
 		awsRegion := cluster.AwsRegion == ""
 		awsAccount := cluster.AwsAccount == ""
-		awsNodeObject := cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.AwsNodeObject.ContainerName == ""
-		clusterAutoscaler := cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.ClusterAutoscalerObject.ContainerName == ""
-		coreDns := cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.CoreDnsObject.ContainerName == ""
-		kubeProxy := cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" || cluster.KubeProxyObject.ContainerName == ""
+		awsNodeObject := cluster.AwsNodeObject.DeploymentName == "" || cluster.AwsNodeObject.ObjectType == "" || cluster.AwsNodeObject.ContainerName == "" || cluster.AwsNodeObject.Namespace == ""
+		clusterAutoscaler := cluster.ClusterAutoscalerObject.DeploymentName == "" || cluster.ClusterAutoscalerObject.ObjectType == "" || cluster.ClusterAutoscalerObject.ContainerName == "" || cluster.ClusterAutoscalerObject.Namespace == ""
+		coreDns := cluster.CoreDnsObject.DeploymentName == "" || cluster.CoreDnsObject.ObjectType == "" || cluster.CoreDnsObject.ContainerName == "" || cluster.CoreDnsObject.Namespace == ""
+		kubeProxy := cluster.KubeProxyObject.DeploymentName == "" || cluster.KubeProxyObject.ObjectType == "" || cluster.KubeProxyObject.ContainerName == "" || cluster.KubeProxyObject.Namespace == ""
 
 		if clusterName || awsRegion || awsAccount || awsNodeObject || clusterAutoscaler || coreDns || kubeProxy {
 			valid = false
