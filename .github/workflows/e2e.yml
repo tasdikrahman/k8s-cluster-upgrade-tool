@@ -3,7 +3,7 @@ name: e2e tests
 on: pull_request
 
 jobs:
-  create-cluster:
+  e2e-tests:
     runs-on: ubuntu-latest
     steps:
       # this setups up coredns and kube-proxy too
@@ -19,14 +19,6 @@ jobs:
         run: |
           kubectl cluster-info
           kubectl get pods -n kube-system
-          echo "\nkube-proxy image installed currently: "
-          kubectl get daemonset kube-proxy --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-          echo "\ncore-dns image installed currently: "
-          kubectl get deployment coredns --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-          echo "\naws-node image installed currently: "
-          kubectl get daemonset aws-node --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-          echo "\ncluster-autoscaler image installed currently: "
-          kubectl get deployment cluster-autoscaler --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
 
@@ -35,6 +27,17 @@ jobs:
 
       - name: Setup aws-node
         run: kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.11.0/config/master/aws-k8s-cni.yaml
+
+      - name: Check the current component versions installed on the cluster
+        run: |
+          echo "kube-proxy image installed currently: "
+          kubectl get daemonset kube-proxy --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "core-dns image installed currently: "
+          kubectl get deployment coredns --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "aws-node image installed currently: "
+          kubectl get daemonset aws-node --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "cluster-autoscaler image installed currently: "
+          kubectl get deployment cluster-autoscaler --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
 
       - name: Build binary
         run: go build
