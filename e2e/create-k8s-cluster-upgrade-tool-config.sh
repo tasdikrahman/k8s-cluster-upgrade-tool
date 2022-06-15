@@ -13,7 +13,7 @@ components:
   aws-node: "v1.11.1"
   cluster-autoscaler: "v1.20.1"
   coredns: "1.8.4"
-  kube-proxy: ""
+  kube-proxy: "v1.20.14"
 clusterlist:
 - ClusterName: "k8s-cluster-upgrade-tool-test-cluster"
   AwsRegion: "region1"
