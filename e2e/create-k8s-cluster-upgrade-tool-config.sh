@@ -15,7 +15,7 @@ components:
   coredns: "1.8.4"
   kube-proxy: "v1.20.14"
 clusterlist:
-- ClusterName: "k8s-cluster-upgrade-tool-test-cluster"
+- ClusterName: "kind-k8s-cluster-upgrade-tool-test-cluster"
   AwsRegion: "region1"
   AwsAccount: "account1"
   AwsNodeObject:

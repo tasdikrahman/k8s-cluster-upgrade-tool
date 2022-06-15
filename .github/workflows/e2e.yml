@@ -21,6 +21,7 @@ jobs:
           kubectl get pods -n kube-system
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
+          cat ~/.kube/config
 
       - name: Setup cluster-autoscaler
         run: ./e2e/cluster-autoscaler-install.sh
@@ -46,5 +47,5 @@ jobs:
         run: ./e2e/create-k8s-cluster-upgrade-tool-config.sh
 
       - name: Run Post upgrade check command on the cluster
-        run: ./k8s-cluster-upgrade-tool postUpgradeCheck k8s-cluster-upgrade-tool-test-cluster
+        run: ./k8s-cluster-upgrade-tool postUpgradeCheck kind-k8s-cluster-upgrade-tool-test-cluster
 
