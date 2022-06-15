@@ -51,6 +51,11 @@ jobs:
           version: 'v1.21.12'
         id: install
 
+      - name: Check kubectl version
+        run: |
+          which kubectl
+          kubectl version
+
       - name: Run Post upgrade check command on the cluster
         run: ./k8s-cluster-upgrade-tool postUpgradeCheck kind-k8s-cluster-upgrade-tool-test-cluster
 
