@@ -118,6 +118,7 @@ subjects:
   - kind: ServiceAccount
     name: cluster-autoscaler
     namespace: kube-system
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
