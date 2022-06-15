@@ -1,4 +1,4 @@
-name: Create Cluster
+name: e2e tests
 
 on: pull_request
 
@@ -19,13 +19,13 @@ jobs:
         run: |
           kubectl cluster-info
           kubectl get pods -n kube-system
-          echo "kube-proxy image installed currently"
+          echo "\nkube-proxy image installed currently: "
           kubectl get daemonset kube-proxy --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-          echo "core-dns image installed currently"
-          kubectl get deployment core-dns --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-          echo "aws-node image installed currently"
+          echo "\ncore-dns image installed currently: "
+          kubectl get deployment coredns --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "\naws-node image installed currently: "
           kubectl get daemonset aws-node --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-          echo "cluster-autoscaler image installed currently"
+          echo "\ncluster-autoscaler image installed currently: "
           kubectl get deployment cluster-autoscaler --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
