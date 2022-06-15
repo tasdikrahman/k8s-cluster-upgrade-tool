@@ -9,8 +9,9 @@ jobs:
       # this setups up coredns too
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.2.0
-        with:
-          node_image: v1.21.1
+        # NOTE: check out how to setup a specific version of kind node version
+#        with:
+#          node_image: v1.21.1
 
       - name: Get kind cluster information
         run: |
