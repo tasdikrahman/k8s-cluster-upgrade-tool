@@ -1,13 +1,16 @@
+#!/bin/bash
+
+cat <<EOF | kubectl apply -f -
 ## borrowed from https://www.eksworkshop.com/beginner/080_scaling/deploy_ca.files/cluster-autoscaler-autodiscover.yaml
- ---
- apiVersion: v1
- kind: ServiceAccount
- metadata:
-   labels:
-     k8s-addon: cluster-autoscaler.addons.k8s.io
-     k8s-app: cluster-autoscaler
-   name: cluster-autoscaler
-   namespace: kube-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-addon: cluster-autoscaler.addons.k8s.io
+    k8s-app: cluster-autoscaler
+  name: cluster-autoscaler
+  namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -156,3 +159,4 @@ spec:
             - --balance-similar-node-groups
             - --skip-nodes-with-system-pods=false
           imagePullPolicy: "Always"
+EOF
