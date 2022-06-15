@@ -64,11 +64,11 @@ func init() {
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "aws-node")
+	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "aws-node")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
@@ -89,11 +89,11 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "kube-proxy")
+	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "kube-proxy")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
@@ -115,11 +115,11 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "coredns")
+	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "coredns")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
@@ -141,11 +141,11 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "cluster-autoscaler")
+	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "cluster-autoscaler")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")

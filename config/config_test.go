@@ -675,12 +675,15 @@ func TestConfigurations_IsComponentVersionConfigurationsValid(t *testing.T) {
 }
 
 func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *testing.T) {
+	type result struct {
+		DeploymentName, ObjectType, ContainerName, Namespace string
+	}
 	tests := []struct {
-		name                                                                                string
-		configuration                                                                       Configurations
-		clusterNameArg, k8sObjectArg                                                        string
-		expectedResultDeploymentName, expectedResultObjectType, expectedResultContainerName string
-		expectedErr                                                                         error
+		name                         string
+		configuration                Configurations
+		clusterNameArg, k8sObjectArg string
+		expectedResult               result
+		expectedErr                  error
 	}{
 		{
 			name: "when the cluster name is present, k8s object and container name passed is valid",
@@ -694,21 +697,25 @@ func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
 							ContainerName:  "aws-node",
+							Namespace:      "kube-system",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
 							ContainerName:  "aws-cluster-autoscaler",
+							Namespace:      "kube-system",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
 							ContainerName:  "kube-proxy",
+							Namespace:      "kube-system",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
 							ContainerName:  "core-dns",
+							Namespace:      "kube-system",
 						},
 					},
 					{
@@ -719,31 +726,38 @@ func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *
 							DeploymentName: "aws-node",
 							ObjectType:     "daemonset",
 							ContainerName:  "aws-node",
+							Namespace:      "kube-system",
 						},
 						ClusterAutoscalerObject: K8sObject{
 							DeploymentName: "cluster-autoscaler",
 							ObjectType:     "deployment",
 							ContainerName:  "aws-cluster-autoscaler",
+							Namespace:      "kube-system",
 						},
 						KubeProxyObject: K8sObject{
 							DeploymentName: "kube-proxy",
 							ObjectType:     "daemonset",
 							ContainerName:  "kube-proxy",
+							Namespace:      "kube-system",
 						},
 						CoreDnsObject: K8sObject{
 							DeploymentName: "coredns",
 							ObjectType:     "deployment",
 							ContainerName:  "core-dns",
+							Namespace:      "kube-system",
 						},
 					},
 				},
 			},
-			clusterNameArg:               "cluster1",
-			k8sObjectArg:                 "cluster-autoscaler",
-			expectedResultDeploymentName: "cluster-autoscaler",
-			expectedResultObjectType:     "deployment",
-			expectedResultContainerName:  "aws-cluster-autoscaler",
-			expectedErr:                  nil,
+			clusterNameArg: "cluster1",
+			k8sObjectArg:   "cluster-autoscaler",
+			expectedResult: result{
+				DeploymentName: "cluster-autoscaler",
+				ObjectType:     "deployment",
+				ContainerName:  "aws-cluster-autoscaler",
+				Namespace:      "kube-system",
+			},
+			expectedErr: nil,
 		},
 		{
 			name: "when the cluster name is present and the k8sobject passed is invalid",
@@ -772,12 +786,15 @@ func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *
 					},
 				},
 			},
-			clusterNameArg:               "cluster1",
-			k8sObjectArg:                 "invalid-arg",
-			expectedResultDeploymentName: "",
-			expectedResultObjectType:     "",
-			expectedResultContainerName:  "",
-			expectedErr:                  errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy"),
+			clusterNameArg: "cluster1",
+			k8sObjectArg:   "invalid-arg",
+			expectedResult: result{
+				DeploymentName: "",
+				ObjectType:     "",
+				ContainerName:  "",
+				Namespace:      "",
+			},
+			expectedErr: errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy"),
 		},
 		{
 			name: "when the cluster name is not present",
@@ -806,22 +823,26 @@ func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *
 					},
 				},
 			},
-			clusterNameArg:               "invalid cluster",
-			k8sObjectArg:                 "aws-node",
-			expectedResultDeploymentName: "",
-			expectedResultObjectType:     "",
-			expectedResultContainerName:  "",
-			expectedErr:                  errors.New("please check if you passed a valid cluster name"),
+			clusterNameArg: "invalid cluster",
+			k8sObjectArg:   "aws-node",
+			expectedResult: result{
+				DeploymentName: "",
+				ObjectType:     "",
+				ContainerName:  "",
+				Namespace:      "",
+			},
+			expectedErr: errors.New("please check if you passed a valid cluster name"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualResultDeploymentName, actualResultObjectType, actualResultContainerName, actualError := tt.configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(tt.clusterNameArg, tt.k8sObjectArg)
+			actualResultDeploymentName, actualResultObjectType, actualResultContainerName, actualResultNamespace, actualError := tt.configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(tt.clusterNameArg, tt.k8sObjectArg)
 
-			assert.Equal(t, tt.expectedResultDeploymentName, actualResultDeploymentName)
-			assert.Equal(t, tt.expectedResultObjectType, actualResultObjectType)
-			assert.Equal(t, tt.expectedResultContainerName, actualResultContainerName)
+			assert.Equal(t, tt.expectedResult.DeploymentName, actualResultDeploymentName)
+			assert.Equal(t, tt.expectedResult.ObjectType, actualResultObjectType)
+			assert.Equal(t, tt.expectedResult.ContainerName, actualResultContainerName)
+			assert.Equal(t, tt.expectedResult.Namespace, actualResultNamespace)
 			assert.Equal(t, tt.expectedErr, actualError)
 		})
 	}

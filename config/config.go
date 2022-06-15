@@ -83,24 +83,24 @@ func (c Configurations) IsClusterNameValid(clusterName string) bool {
 	return contains
 }
 
-func (c Configurations) GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, k8sObject string) (k8sObjectDeploymentName, k8sObjectObjectType, k8sObjectContainerName string, err error) {
+func (c Configurations) GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, k8sObject string) (k8sObjectDeploymentName, k8sObjectObjectType, k8sObjectContainerName, k8sObjectNamespace string, err error) {
 	for _, cluster := range c.ClusterList {
 		if cluster.ClusterName == clusterName {
 			switch k8sObject {
 			case "aws-node":
-				return cluster.AwsNodeObject.DeploymentName, cluster.AwsNodeObject.ObjectType, cluster.AwsNodeObject.ContainerName, nil
+				return cluster.AwsNodeObject.DeploymentName, cluster.AwsNodeObject.ObjectType, cluster.AwsNodeObject.ContainerName, cluster.AwsNodeObject.Namespace, nil
 			case "cluster-autoscaler":
-				return cluster.ClusterAutoscalerObject.DeploymentName, cluster.ClusterAutoscalerObject.ObjectType, cluster.ClusterAutoscalerObject.ContainerName, nil
+				return cluster.ClusterAutoscalerObject.DeploymentName, cluster.ClusterAutoscalerObject.ObjectType, cluster.ClusterAutoscalerObject.ContainerName, cluster.ClusterAutoscalerObject.Namespace, nil
 			case "kube-proxy":
-				return cluster.KubeProxyObject.DeploymentName, cluster.KubeProxyObject.ObjectType, cluster.KubeProxyObject.ContainerName, nil
+				return cluster.KubeProxyObject.DeploymentName, cluster.KubeProxyObject.ObjectType, cluster.KubeProxyObject.ContainerName, cluster.KubeProxyObject.Namespace, nil
 			case "coredns":
-				return cluster.CoreDnsObject.DeploymentName, cluster.CoreDnsObject.ObjectType, cluster.CoreDnsObject.ContainerName, nil
+				return cluster.CoreDnsObject.DeploymentName, cluster.CoreDnsObject.ObjectType, cluster.CoreDnsObject.ContainerName, cluster.CoreDnsObject.Namespace, nil
 			default:
-				return "", "", "", errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
+				return "", "", "", "", errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
 			}
 		}
 	}
-	return "", "", "", errors.New("please check if you passed a valid cluster name")
+	return "", "", "", "", errors.New("please check if you passed a valid cluster name")
 }
 
 func (c Configurations) GetAwsAccountAndRegionForCluster(clusterName string) (awsAccount, awsRegion string, err error) {
