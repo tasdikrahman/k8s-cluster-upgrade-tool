@@ -6,12 +6,11 @@ jobs:
   create-cluster:
     runs-on: ubuntu-latest
     steps:
-      # this setups up coredns too
+      # this setups up coredns and kube-proxy too
       - uses: actions/checkout@master
 
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.2.0
-        # NOTE: check out how to setup a specific version of kind node version
         with:
           node_image: kindest/node:v1.20.15
 
@@ -22,10 +21,9 @@ jobs:
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
 
-#      - name: Set up Helm
-#        uses: azure/setup-helm@v1
-#        with:
-#          version: v3.8.1
-
       - name: Setup cluster-autoscaler
         run: ./e2e/cluster-autoscaler-install.sh
+
+      - name: Setup aws-node
+        run: kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.11.0/config/master/aws-k8s-cni.yaml
+
