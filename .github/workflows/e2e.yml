@@ -13,11 +13,20 @@ jobs:
         uses: helm/kind-action@v1.2.0
         with:
           node_image: kindest/node:v1.20.15
+          cluster_name: k8s-cluster-upgrade-tool-test-cluster
 
       - name: Get kind cluster information
         run: |
           kubectl cluster-info
           kubectl get pods -n kube-system
+          echo "kube-proxy image installed currently"
+          kubectl get daemonset kube-proxy --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "core-dns image installed currently"
+          kubectl get deployment core-dns --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "aws-node image installed currently"
+          kubectl get daemonset aws-node --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "cluster-autoscaler image installed currently"
+          kubectl get deployment cluster-autoscaler --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
 
@@ -26,4 +35,13 @@ jobs:
 
       - name: Setup aws-node
         run: kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.11.0/config/master/aws-k8s-cni.yaml
+
+      - name: Build binary
+        run: go build
+
+      - name: Create config for k8s-cluster-upgrade-tool
+        run: ./e2e/create-k8s-cluster-upgrade-tool-config.sh
+
+      - name: Run Post upgrade check command on the cluster
+        run: ./k8s-cluster-upgrade-tool postUpgradeCheck k8s-cluster-upgrade-tool-test-cluster
 

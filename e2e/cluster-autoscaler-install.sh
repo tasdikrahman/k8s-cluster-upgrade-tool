@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 cat <<EOF | kubectl apply -f -
 ## borrowed from https://www.eksworkshop.com/beginner/080_scaling/deploy_ca.files/cluster-autoscaler-autodiscover.yaml
 ---
