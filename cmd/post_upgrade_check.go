@@ -64,11 +64,11 @@ func init() {
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "aws-node")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "aws-node")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
 	log.Printf("args for aws-node component: %s\n", args)
 
 	output, err := exec.Command(args[0], args[1:]...).Output()
@@ -92,11 +92,11 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "kube-proxy")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "kube-proxy")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the kube-proxy component")
@@ -118,11 +118,11 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "coredns")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "coredns")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the coredns component")
@@ -144,11 +144,11 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, _, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, "cluster-autoscaler")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "cluster-autoscaler")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component")
