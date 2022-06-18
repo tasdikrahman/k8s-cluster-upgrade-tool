@@ -95,7 +95,6 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
-	log.Printf("args for kube-proxy component: %s\n", args)
 
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
@@ -123,7 +122,6 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
-	log.Printf("args for core-dns component: %s\n", args)
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the coredns component")
@@ -150,7 +148,6 @@ func checkClusterAutoscalerVersion(clusterName string, configuration config.Conf
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
-	log.Printf("args for cluster-autoscaler component: %s\n", args)
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component")

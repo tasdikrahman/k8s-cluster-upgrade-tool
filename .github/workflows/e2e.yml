@@ -49,6 +49,7 @@ jobs:
       - name: Show the config created
         run: cat ~/.k8s-cluster-upgrade-tool/config.yaml
 
+      # will exit with zero status code if everything is functional
       - name: Run Post upgrade check command on the cluster
         run: ./k8s-cluster-upgrade-tool postUpgradeCheck kind-k8s-cluster-upgrade-tool-test-cluster
 

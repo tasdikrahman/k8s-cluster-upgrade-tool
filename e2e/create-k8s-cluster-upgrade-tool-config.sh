@@ -29,13 +29,13 @@ clusterlist:
     ContainerName: "aws-cluster-autoscaler"
     Namespace: "kube-system"
   CoreDnsObject:
-    ObjectType: "coredns"
-    DeploymentName: "deployment"
+    DeploymentName: "coredns"
+    ObjectType: "deployment"
     ContainerName: "coredns"
     Namespace: "kube-system"
   KubeProxyObject:
-    ObjectType: "kube-proxy"
-    DeploymentName: "daemonset"
+    DeploymentName: "kube-proxy"
+    ObjectType: "daemonset"
     ContainerName: "kube-proxy"
     Namespace: "kube-system"
 EOF
