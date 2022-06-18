@@ -69,9 +69,12 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
+	log.Printf("args for aws-node component: %s\n", args)
+
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Println(err.Error())
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the aws-node component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
@@ -96,7 +99,7 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the kube-proxy component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
@@ -122,7 +125,7 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the coredns component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
@@ -148,7 +151,7 @@ func checkClusterAutoscalerVersion(clusterName string, configuration config.Conf
 	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName, k8sNamespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
