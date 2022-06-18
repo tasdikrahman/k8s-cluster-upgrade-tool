@@ -31,7 +31,7 @@ type K8sObject struct {
 	DeploymentName string `mapstructure:"DeploymentName"`
 	ObjectType     string `mapstructure:"ObjectType"`
 	ContainerName  string `mapstructure:"ContainerName"`
-	Namespace      string `mapstructure:"ContainerName"`
+	Namespace      string `mapstructure:"Namespace"`
 }
 
 type ComponentVersionConfigurations struct {
