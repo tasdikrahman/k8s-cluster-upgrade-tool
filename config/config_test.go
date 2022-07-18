@@ -674,7 +674,7 @@ func TestConfigurations_IsComponentVersionConfigurationsValid(t *testing.T) {
 	}
 }
 
-func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *testing.T) {
+func TestConfigurations_GetK8sObjectForCluster(t *testing.T) {
 	type result struct {
 		DeploymentName, ObjectType, ContainerName, Namespace string
 	}
@@ -837,12 +837,12 @@ func TestConfigurations_GetK8sObjectNameObjectTypeAndContainerNameForCluster(t *
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualResultDeploymentName, actualResultObjectType, actualResultContainerName, actualResultNamespace, actualError := tt.configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(tt.clusterNameArg, tt.k8sObjectArg)
+			resultk8sObject, actualError := tt.configuration.GetK8sObjectForCluster(tt.clusterNameArg, tt.k8sObjectArg)
 
-			assert.Equal(t, tt.expectedResult.DeploymentName, actualResultDeploymentName)
-			assert.Equal(t, tt.expectedResult.ObjectType, actualResultObjectType)
-			assert.Equal(t, tt.expectedResult.ContainerName, actualResultContainerName)
-			assert.Equal(t, tt.expectedResult.Namespace, actualResultNamespace)
+			assert.Equal(t, tt.expectedResult.DeploymentName, resultk8sObject.DeploymentName)
+			assert.Equal(t, tt.expectedResult.ObjectType, resultk8sObject.ObjectType)
+			assert.Equal(t, tt.expectedResult.ContainerName, resultk8sObject.ContainerName)
+			assert.Equal(t, tt.expectedResult.Namespace, resultk8sObject.Namespace)
 			assert.Equal(t, tt.expectedErr, actualError)
 		})
 	}

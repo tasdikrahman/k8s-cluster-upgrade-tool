@@ -1,0 +1,55 @@
+name: e2e tests
+
+on: pull_request
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # this setups up coredns and kube-proxy too
+      - uses: actions/checkout@master
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.2.0
+        with:
+          node_image: kindest/node:v1.20.15
+          cluster_name: k8s-cluster-upgrade-tool-test-cluster
+
+      - name: Get kind cluster information
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+          cat ~/.kube/config
+
+      - name: Setup cluster-autoscaler
+        run: ./e2e/cluster-autoscaler-install.sh
+
+      - name: Setup aws-node
+        run: kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.11.0/config/master/aws-k8s-cni.yaml
+
+      - name: Check the current component versions installed on the cluster
+        run: |
+          echo "kube-proxy image installed currently: "
+          kubectl get daemonset kube-proxy --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "core-dns image installed currently: "
+          kubectl get deployment coredns --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "aws-node image installed currently: "
+          kubectl get daemonset aws-node --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+          echo "cluster-autoscaler image installed currently: "
+          kubectl get deployment cluster-autoscaler --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+
+      - name: Build binary
+        run: go build
+
+      - name: Create config for k8s-cluster-upgrade-tool
+        run: ./e2e/create-k8s-cluster-upgrade-tool-config.sh
+
+      - name: Show the config created
+        run: cat ~/.k8s-cluster-upgrade-tool/config.yaml
+
+      # will exit with zero status code if everything is functional
+      - name: Run Post upgrade check command on the cluster
+        run: ./k8s-cluster-upgrade-tool postUpgradeCheck kind-k8s-cluster-upgrade-tool-test-cluster
+

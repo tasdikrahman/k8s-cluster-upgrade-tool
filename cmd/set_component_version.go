@@ -56,29 +56,29 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		componentName, imageTag := args[1], args[2]
 		switch componentName {
 		case "coredns":
-			k8sObjectName, k8sObjectType, k8sObjectContainerName, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(args[0], "coredns")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "coredns")
 			if err != nil {
 				log.Fatalln("There was an error reading config from the config file")
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType, k8sObjectContainerName, k8sNamespace)
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		case "kube-proxy":
-			k8sObjectName, k8sObjectType, k8sObjectContainerName, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(args[0], "kube-proxy")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "kube-proxy")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType, k8sObjectContainerName, k8sNamespace)
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		case "aws-node":
-			k8sObjectName, k8sObjectType, k8sObjectContainerName, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(args[0], "aws-node")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "aws-node")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType, k8sObjectContainerName, k8sNamespace)
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		case "cluster-autoscaler":
-			k8sObjectName, k8sObjectType, k8sObjectContainerName, k8sNamespace, err := configuration.GetK8sObjectNameObjectTypeAndContainerNameForCluster(args[0], "cluster-autoscaler")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "cluster-autoscaler")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType, k8sObjectContainerName, k8sNamespace)
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		default:
 			log.Println("please check the passed components, the supported components are cluster-autoscaler, kube-proxy, coredns, aws-node")
 		}

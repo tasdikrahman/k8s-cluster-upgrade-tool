@@ -31,7 +31,7 @@ type K8sObject struct {
 	DeploymentName string `mapstructure:"DeploymentName"`
 	ObjectType     string `mapstructure:"ObjectType"`
 	ContainerName  string `mapstructure:"ContainerName"`
-	Namespace      string `mapstructure:"ContainerName"`
+	Namespace      string `mapstructure:"Namespace"`
 }
 
 type ComponentVersionConfigurations struct {
@@ -83,24 +83,54 @@ func (c Configurations) IsClusterNameValid(clusterName string) bool {
 	return contains
 }
 
-func (c Configurations) GetK8sObjectNameObjectTypeAndContainerNameForCluster(clusterName, k8sObject string) (k8sObjectDeploymentName, k8sObjectObjectType, k8sObjectContainerName, k8sObjectNamespace string, err error) {
+func (c Configurations) GetK8sObjectForCluster(clusterName, k8sObjectType string) (k8sObject K8sObject, err error) {
 	for _, cluster := range c.ClusterList {
 		if cluster.ClusterName == clusterName {
-			switch k8sObject {
+			switch k8sObjectType {
 			case "aws-node":
-				return cluster.AwsNodeObject.DeploymentName, cluster.AwsNodeObject.ObjectType, cluster.AwsNodeObject.ContainerName, cluster.AwsNodeObject.Namespace, nil
+				return K8sObject{
+					DeploymentName: cluster.AwsNodeObject.DeploymentName,
+					ObjectType:     cluster.AwsNodeObject.ObjectType,
+					ContainerName:  cluster.AwsNodeObject.ContainerName,
+					Namespace:      cluster.AwsNodeObject.Namespace,
+				}, nil
 			case "cluster-autoscaler":
-				return cluster.ClusterAutoscalerObject.DeploymentName, cluster.ClusterAutoscalerObject.ObjectType, cluster.ClusterAutoscalerObject.ContainerName, cluster.ClusterAutoscalerObject.Namespace, nil
+				return K8sObject{
+					DeploymentName: cluster.ClusterAutoscalerObject.DeploymentName,
+					ObjectType:     cluster.ClusterAutoscalerObject.ObjectType,
+					ContainerName:  cluster.ClusterAutoscalerObject.ContainerName,
+					Namespace:      cluster.ClusterAutoscalerObject.Namespace,
+				}, nil
 			case "kube-proxy":
-				return cluster.KubeProxyObject.DeploymentName, cluster.KubeProxyObject.ObjectType, cluster.KubeProxyObject.ContainerName, cluster.KubeProxyObject.Namespace, nil
+				return K8sObject{
+					DeploymentName: cluster.KubeProxyObject.DeploymentName,
+					ObjectType:     cluster.KubeProxyObject.ObjectType,
+					ContainerName:  cluster.KubeProxyObject.ContainerName,
+					Namespace:      cluster.KubeProxyObject.Namespace,
+				}, nil
 			case "coredns":
-				return cluster.CoreDnsObject.DeploymentName, cluster.CoreDnsObject.ObjectType, cluster.CoreDnsObject.ContainerName, cluster.CoreDnsObject.Namespace, nil
+				return K8sObject{
+					DeploymentName: cluster.CoreDnsObject.DeploymentName,
+					ObjectType:     cluster.CoreDnsObject.ObjectType,
+					ContainerName:  cluster.CoreDnsObject.ContainerName,
+					Namespace:      cluster.CoreDnsObject.Namespace,
+				}, nil
 			default:
-				return "", "", "", "", errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
+				return K8sObject{
+					DeploymentName: "",
+					ObjectType:     "",
+					ContainerName:  "",
+					Namespace:      "",
+				}, errors.New("please pass any of the components between aws-node, coredns, cluster-autoscaler, kube-proxy")
 			}
 		}
 	}
-	return "", "", "", "", errors.New("please check if you passed a valid cluster name")
+	return K8sObject{
+		DeploymentName: "",
+		ObjectType:     "",
+		ContainerName:  "",
+		Namespace:      "",
+	}, errors.New("please check if you passed a valid cluster name")
 }
 
 func (c Configurations) GetAwsAccountAndRegionForCluster(clusterName string) (awsAccount, awsRegion string, err error) {
