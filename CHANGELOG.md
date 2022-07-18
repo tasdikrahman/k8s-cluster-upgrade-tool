@@ -2,8 +2,12 @@
 
 ### v0.2.0
 
+#### Adds
+
+- e2e tests for the command postUpgradeCheck
+
 #### Breaking change
-- the config keys being used, please refer the same config and rename the key attributes.
+- the config keys being used, please refer the same config and rename the key attributes as provided in `config.sample.yaml`
 
 #### Adds
 - ability to read container image, namespace to be read from config for a component being updated, for cases when deployment name
