@@ -34,7 +34,7 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 
 		if configuration.IsClusterNameValid(args[0]) {
 			log.Println("Setting kubernetes context to", args[0])
-			setK8sContext(args[0])
+			k8s.SetK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
@@ -61,30 +61,18 @@ func init() {
 	// TODO Move the flags to required ones similar to taint-and-drain-asg command
 }
 
-func setK8sContext(clusterName string) {
-	command := "kubectl"
-	arg01 := "config"
-	arg02 := "use-context"
-
-	// TODO: change this to use client-go
-	cmd := exec.Command(command, arg01, arg02, clusterName)
-	err := cmd.Run()
-	if err != nil {
-		log.Fatalln("Error setting kube context to the cluster selected")
-	}
-}
-
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking aws-node version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "aws-node")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "aws-node")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
+
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the aws-node component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
@@ -102,14 +90,15 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking kube-proxy version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "kube-proxy")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "kube-proxy")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
+
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the kube-proxy component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
@@ -128,14 +117,14 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking coredns version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "coredns")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "coredns")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the coredns component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")
@@ -154,14 +143,14 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations) {
 	log.Println("Checking cluster-autoscaler version")
 	// TODO: Change this to use to k8s client-go
-	k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(clusterName, "cluster-autoscaler")
+	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "cluster-autoscaler")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObjectType, k8sObjectName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(k8sObject.ObjectType, k8sObject.DeploymentName, k8sObject.Namespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the component")
+		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component")
 	}
 
 	imageTag, err := k8s.ParseComponentImage(string(output), "imageTag")

@@ -3,6 +3,8 @@ package k8s
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os/exec"
 	"strings"
 )
 
@@ -17,27 +19,27 @@ func ParseComponentImage(kubectlExecOutput string, imageSection string) (string,
 }
 
 // TODO add spec for this
-func KubectlGetImageCommand(k8sObject string, component string) string {
+func KubectlGetImageCommand(k8sObject, component, namespace string) string {
 	return fmt.Sprintf(`
 	kubectl
 	get
 	%s
 	%s
-	--namespace kube-system
+	--namespace %s
 	-o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-	`, k8sObject, component)
+	`, k8sObject, component, namespace)
 }
 
 // TODO add spec for this
-func KubectlSetImageCommand(k8sObject string, componentName string, containerImage string) string {
+func KubectlSetImageCommand(k8sObject, componentName, containerImage, namespace string) string {
 	return fmt.Sprintf(`
 	kubectl
 	set
 	image
 	%s
-	--namespace kube-system
+	--namespace %s
 	%s=%s
-	`, k8sObject, componentName, containerImage)
+	`, k8sObject, componentName, containerImage, namespace)
 }
 
 // TODO add spec for this
@@ -63,4 +65,18 @@ func KubectlDrainNodeCommand(node string) string {
 	--delete-local-data
 	%s
 	`, node)
+}
+
+// TODO add spec for this
+func SetK8sContext(clusterName string) {
+	command := "kubectl"
+	arg01 := "config"
+	arg02 := "use-context"
+
+	// TODO: change this to use client-go
+	cmd := exec.Command(command, arg01, arg02, clusterName)
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalln("Error setting kube context to the cluster selected")
+	}
 }

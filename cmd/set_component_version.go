@@ -40,7 +40,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 
 		if configuration.IsClusterNameValid(args[0]) {
 			log.Println("Setting kubernetes context to", args[0])
-			setK8sContext(args[0])
+			k8s.SetK8sContext(args[0])
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
@@ -56,27 +56,31 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 		componentName, imageTag := args[1], args[2]
 		switch componentName {
 		case "coredns":
-			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "coredns")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "coredns")
 			if err != nil {
 				log.Fatalln("There was an error reading config from the config file")
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		case "kube-proxy":
-			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "kube-proxy")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "kube-proxy")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		case "aws-node":
-			k8sObjectName, k8sObjectType, err := configuration.GetK8sObjectNameAndObjectTypeForCluster(args[0], "aws-node")
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "aws-node")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObjectType, k8sObjectName), k8sObjectType)
-		// TODO: As of now this assumes that the container name to which we set the image, will be the same as the deployment name
-		// which needs to be configurable from the config
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+		case "cluster-autoscaler":
+			k8sObject, err := configuration.GetK8sObjectForCluster(args[0], "cluster-autoscaler")
+			if err != nil {
+				log.Println(err)
+			}
+			setComponentVersion(imageTag, componentName, fmt.Sprintf("%s.apps/%s", k8sObject.ObjectType, k8sObject.DeploymentName), k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 		default:
-			log.Println("please check the passed components, if passed with cluster auto scaler support will be added soon")
+			log.Println("please check the passed components, the supported components are cluster-autoscaler, kube-proxy, coredns, aws-node")
 		}
 	},
 }
@@ -87,9 +91,9 @@ func init() {
 	// TODO Move the flags to required ones similar to taint-and-drain-asg command
 }
 
-func setComponentVersion(imageTag string, componentName string, k8sSetQueryCmdObject string, componentK8sObject string) {
+func setComponentVersion(imageTag, componentName, k8sSetQueryCmdObject, componentK8sObject, containerName, namespace string) {
 	// get current imagePrefix
-	args := strings.Fields(k8s.KubectlGetImageCommand(componentK8sObject, componentName))
+	args := strings.Fields(k8s.KubectlGetImageCommand(componentK8sObject, componentName, namespace))
 	output, err := exec.Command(args[0], args[1:]...).Output()
 	if err != nil {
 		log.Fatalln("There was an error while fetching the image of the component from the cluster: ", err)
@@ -101,7 +105,7 @@ func setComponentVersion(imageTag string, componentName string, k8sSetQueryCmdOb
 	}
 	containerImage := imagePrefix + ":" + imageTag
 
-	args = strings.Fields(k8s.KubectlSetImageCommand(k8sSetQueryCmdObject, componentName, containerImage))
+	args = strings.Fields(k8s.KubectlSetImageCommand(k8sSetQueryCmdObject, containerName, containerImage, namespace))
 	cmd := exec.Command(args[0], args[1:]...)
 	err = cmd.Run()
 	if err != nil {

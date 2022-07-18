@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	toolConfig "k8s-cluster-upgrade-tool/config"
 	"k8s-cluster-upgrade-tool/internal/api/aws"
+	"k8s-cluster-upgrade-tool/internal/api/k8s"
 	"log"
 )
 
@@ -56,7 +57,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 			_, _, err := configuration.GetAwsAccountAndRegionForCluster(cluster)
 			if err == nil {
 				log.Println("Setting kubernetes context to", cluster)
-				setK8sContext(cluster)
+				k8s.SetK8sContext(cluster)
 			}
 		} else {
 			log.Fatalln("Please pass a valid clusterName or check if the AWS account has a mapping inside the tool for the account and the region")
