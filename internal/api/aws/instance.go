@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 
-	"k8s-cluster-upgrade-tool/internal/api/k8s"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 )
 
 // TODO: Make the domain modelling cleaner and compose the types together which are created alongside one another

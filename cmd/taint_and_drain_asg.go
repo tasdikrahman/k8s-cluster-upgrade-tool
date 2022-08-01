@@ -3,11 +3,11 @@ package cmd
 import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/config"
+	toolConfig "github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/aws"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	toolConfig "k8s-cluster-upgrade-tool/config"
-	"k8s-cluster-upgrade-tool/internal/api/aws"
-	"k8s-cluster-upgrade-tool/internal/api/k8s"
 	"log"
 )
 

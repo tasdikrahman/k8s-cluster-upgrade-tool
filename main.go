@@ -1,7 +1,7 @@
 package main
 
 import (
-	"k8s-cluster-upgrade-tool/cmd"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/cmd"
 )
 
 func main() {
