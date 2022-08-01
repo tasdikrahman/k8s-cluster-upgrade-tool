@@ -1,4 +1,4 @@
-module k8s-cluster-upgrade-tool
+module github.com/deliveryhero/k8s-cluster-upgrade-tool
 
 go 1.17
 

@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"k8s-cluster-upgrade-tool/config"
-	"k8s-cluster-upgrade-tool/internal/api/k8s"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 )
 
 var postUpgradeCheckCmd = &cobra.Command{

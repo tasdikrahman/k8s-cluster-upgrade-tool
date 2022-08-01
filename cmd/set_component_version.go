@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"k8s-cluster-upgrade-tool/config"
-	"k8s-cluster-upgrade-tool/internal/api/k8s"
 	"log"
 	"os/exec"
 	"strings"
