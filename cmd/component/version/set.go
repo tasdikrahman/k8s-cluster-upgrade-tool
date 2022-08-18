@@ -1,7 +1,8 @@
-package cmd
+package version
 
 import (
 	"fmt"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/cmd"
 	"github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
 	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 	"github.com/spf13/cobra"
@@ -86,7 +87,7 @@ $ k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node my-ve
 }
 
 func init() {
-	RootCmd.AddCommand(setComponentVersionCmd)
+	cmd.RootCmd.AddCommand(setComponentVersionCmd)
 
 	// TODO Move the flags to required ones similar to taint-and-drain-asg command
 }

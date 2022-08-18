@@ -1,8 +1,9 @@
-package cmd
+package asg
 
 import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/cmd"
 	toolConfig "github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
 	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/aws"
 	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
@@ -122,7 +123,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 }
 
 func init() {
-	RootCmd.AddCommand(nodeTaintAndDrainCmd)
+	cmd.RootCmd.AddCommand(nodeTaintAndDrainCmd)
 
 	nodeTaintAndDrainCmd.Flags().StringP("cluster", "c", "",
 		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")

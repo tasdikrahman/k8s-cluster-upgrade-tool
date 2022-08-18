@@ -1,14 +1,14 @@
-package cmd
+package version
 
 import (
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/cmd"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
+	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
 	"os/exec"
 	"strings"
-
-	"github.com/deliveryhero/k8s-cluster-upgrade-tool/config"
-	"github.com/deliveryhero/k8s-cluster-upgrade-tool/internal/api/k8s"
 )
 
 var postUpgradeCheckCmd = &cobra.Command{
@@ -56,7 +56,7 @@ $ k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name`,
 }
 
 func init() {
-	RootCmd.AddCommand(postUpgradeCheckCmd)
+	cmd.RootCmd.AddCommand(postUpgradeCheckCmd)
 
 	// TODO Move the flags to required ones similar to taint-and-drain-asg command
 }
