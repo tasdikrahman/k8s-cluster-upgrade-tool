@@ -924,6 +924,6 @@ func TestFileMetadata(t *testing.T) {
 
 		assert.Equal(t, gotFileName, "config")
 		assert.Equal(t, gotFileType, "yaml")
-		assert.Equal(t, gotFilePath, "$HOME/.k8s-cluster-upgrade-tool")
+		assert.Equal(t, gotFilePath, "$HOME/.k8sclusterupgradetool")
 	})
 }
