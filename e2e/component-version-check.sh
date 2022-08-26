@@ -2,4 +2,4 @@
 
 set -e
 
-./k8sclusterupgradetool postUpgradeCheck kind-k8s-cluster-upgrade-tool-test-cluster
+./k8sclusterupgradetool component version check kind-k8s-cluster-upgrade-tool-test-cluster
