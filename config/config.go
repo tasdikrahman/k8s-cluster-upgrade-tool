@@ -8,7 +8,7 @@ import (
 const (
 	FileName = "config"
 	FileType = "yaml"
-	FilePath = "$HOME/.k8s-cluster-upgrade-tool"
+	FilePath = "$HOME/.k8sclusterupgradetool"
 )
 
 type Configurations struct {
