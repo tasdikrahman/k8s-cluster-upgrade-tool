@@ -41,7 +41,7 @@ jobs:
           kubectl get deployment cluster-autoscaler --namespace kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
 
       - name: Build binary
-        run: go build
+        run: go build -o k8sclusterupgradetool
 
       - name: Create config for k8s-cluster-upgrade-tool
         run: ./e2e/create-k8s-cluster-upgrade-tool-config.sh
@@ -51,5 +51,5 @@ jobs:
 
       # will exit with zero status code if everything is functional
       - name: Run Post upgrade check command on the cluster
-        run: ./k8s-cluster-upgrade-tool postUpgradeCheck kind-k8s-cluster-upgrade-tool-test-cluster
+        run: ./e2e/component-version-check.sh
 
