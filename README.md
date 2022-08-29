@@ -59,15 +59,15 @@ cluster-autoscaler needs to be updated, is currently on far-version, desired ver
 
 #### Setting component versions for outdated components
 ```
-$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k8s-comp=coredns -v=coredns-component-version
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k=coredns -v=coredns-component-version
 Setting kubernetes context to valid-cluster-name
 2022/02/10 12:41:06 coredns has been set to coredns-component-version in cluster
 
-$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k8s-comp=aws-node -v=aws-component-version
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k=aws-node -v=aws-component-version
 Setting kubernetes context to valid-cluster-name
 2022/02/10 12:39:49 aws-node has been set to aws-component-version in cluster
 
-$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k8s-comp=aws-node -v=aws-component-version123asd
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k=aws-node -v=aws-component-version123asd
 2022/03/25 13:41:55 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:41:55 aws-node version read from config: aws-component-version
 2022/03/25 13:41:55 coredns version read from config: coredns-component-version
@@ -75,7 +75,7 @@ $ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k8s-comp=
 2022/03/25 13:41:55 cluster-autoscaler version read from config: cluster-autoscaler-component-version
 2022/03/25 13:41:55 aws-node component version passed doesn't match the version in config, please check the value in config file
 
-$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k8s-comp=foo-deployment -v=vfoo-wrong-version
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -k=foo-deployment -v=vfoo-wrong-version
 2022/03/25 13:42:52 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:42:52 aws-node version read from config: aws-component-version
 2022/03/25 13:42:52 coredns version read from config: coredns-component-version
