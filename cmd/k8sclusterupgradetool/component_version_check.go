@@ -59,7 +59,7 @@ $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 func init() {
 	componentVersionCmd.AddCommand(postUpgradeCheckCmd)
 
-	nodeTaintAndDrainCmd.Flags().StringP("cluster", "c", "",
+	postUpgradeCheckCmd.Flags().StringP("cluster", "c", "",
 		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")
 	//nolint
 	postUpgradeCheckCmd.MarkFlagRequired("cluster")

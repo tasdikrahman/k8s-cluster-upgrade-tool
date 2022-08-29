@@ -36,10 +36,10 @@ sudo xattr -r -d com.apple.quarantine ~/path_to_binary/k8sclusterupgradetool
 #### Running post upgrade checks
 
 ```
-$ .k8sclusterupgradetool component version check foo-cluster
+$ .k8sclusterupgradetool component version check -c=foo-cluster
 2022/02/10 13:50:19 Please pass a valid clusterName
 
-$ ./k8sclusterupgradetool component version check valid-cluster-name
+$ ./k8sclusterupgradetool component version check -c=valid-cluster-name
 2022/03/25 13:44:15 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:44:15 aws-node version read from config: aws-component-version
 2022/03/25 13:44:15 coredns version read from config: coredns-component-version
