@@ -17,7 +17,7 @@ var setComponentVersionCmd = &cobra.Command{
 	Long: `Sets the value of a component running in the cluster to the passed value,
 as of now will support setting the value for aws-node, cluster-autoscaler, kube-proxy, coredns
 Usage:
-$ k8sclusterupgradetool component version set valid-cluster-name aws-node my-version`,
+$ k8sclusterupgradetool component version set -c=valid-cluster-name -k8s-comp=aws-node -v=my-version`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Parse flag values
 		cluster, _ := cmd.Flags().GetString("cluster")
