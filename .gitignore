@@ -9,7 +9,6 @@
 *.dylib
 .idea/*
 
-k8s-cluster-upgrade-tool
 k8sclusterupgradetool
 
 # Test binary, built with `go test -c`

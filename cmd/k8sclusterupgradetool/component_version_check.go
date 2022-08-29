@@ -15,9 +15,10 @@ var postUpgradeCheckCmd = &cobra.Command{
 	Short: "Runs post upgrade checks on a cluster",
 	Long: `Just checks for a cluster to see whether all the components have been upgraded or not
 Usage:
-$ k8sclusterupgradetool component version check valid-cluster-name`,
+$ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
+		cluster, _ := cmd.Flags().GetString("cluster")
 		// Read config from file
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
@@ -31,14 +32,15 @@ $ k8sclusterupgradetool component version check valid-cluster-name`,
 		log.Printf("kube-proxy version read from config: %s", viper.Get("components.kube-proxy"))
 		log.Printf("cluster-autoscaler version read from config: %s", viper.Get("components.cluster-autoscaler"))
 
-		if configuration.IsClusterNameValid(args[0]) {
-			log.Println("Setting kubernetes context to", args[0])
-			k8s.SetK8sContext(args[0])
+		if configuration.IsClusterNameValid(cluster) {
+			log.Println("Setting kubernetes context to", cluster)
+			k8s.SetK8sContext(cluster)
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		cluster, _ := cmd.Flags().GetString("cluster")
 		// Read config from file
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
@@ -47,17 +49,20 @@ $ k8sclusterupgradetool component version check valid-cluster-name`,
 		}
 
 		log.Println("running post upgrade checks")
-		checkAwsNodeComponentVersion(args[0], configuration)
-		checkKubeProxyComponentVersion(args[0], configuration)
-		checkCoreDnsComponentVersion(args[0], configuration)
-		checkClusterAutoscalerVersion(args[0], configuration)
+		checkAwsNodeComponentVersion(cluster, configuration)
+		checkKubeProxyComponentVersion(cluster, configuration)
+		checkCoreDnsComponentVersion(cluster, configuration)
+		checkClusterAutoscalerVersion(cluster, configuration)
 	},
 }
 
 func init() {
 	componentVersionCmd.AddCommand(postUpgradeCheckCmd)
 
-	// TODO Move the flags to required ones similar to taint-and-drain-asg command
+	nodeTaintAndDrainCmd.Flags().StringP("cluster", "c", "",
+		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")
+	//nolint
+	postUpgradeCheckCmd.MarkFlagRequired("cluster")
 }
 
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {
