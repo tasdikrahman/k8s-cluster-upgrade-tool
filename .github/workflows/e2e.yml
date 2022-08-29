@@ -47,7 +47,7 @@ jobs:
         run: ./e2e/create-k8s-cluster-upgrade-tool-config.sh
 
       - name: Show the config created
-        run: cat ~/.k8s-cluster-upgrade-tool/config.yaml
+        run: cat ~/.k8sclusterupgradetool/config.yaml
 
       # will exit with zero status code if everything is functional
       - name: Run Post upgrade check command on the cluster
