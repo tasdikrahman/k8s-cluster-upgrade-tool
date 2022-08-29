@@ -10,20 +10,28 @@ import (
 	"strings"
 )
 
+func init() {
+	componentVersionCmd.AddCommand(postUpgradeCheckCmd)
+
+	postUpgradeCheckCmd.Flags().StringP("cluster", "c", "",
+		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")
+	//nolint
+	postUpgradeCheckCmd.MarkFlagRequired("cluster")
+}
+
 var postUpgradeCheckCmd = &cobra.Command{
 	Use:   "check",
 	Short: "Runs post upgrade checks on a cluster",
 	Long: `Just checks for a cluster to see whether all the components have been upgraded or not
 Usage:
 $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
-	Args: cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, args []string) {
 		cluster, _ := cmd.Flags().GetString("cluster")
 		// Read config from file
 		configFileName, configFileType, configFilePath := config.FileMetadata()
 		configuration, err := config.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			log.Fatalln("There was an error reading config from the config file")
+			log.Fatalln(err)
 		}
 
 		log.Println("Config file used:", viper.ConfigFileUsed())
@@ -38,15 +46,6 @@ $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		cluster, _ := cmd.Flags().GetString("cluster")
-		// Read config from file
-		configFileName, configFileType, configFilePath := config.FileMetadata()
-		configuration, err := config.Read(configFileName, configFileType, configFilePath)
-		if err != nil {
-			log.Fatal(err)
-		}
 
 		log.Println("running post upgrade checks")
 		checkAwsNodeComponentVersion(cluster, configuration)
@@ -54,15 +53,6 @@ $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 		checkCoreDnsComponentVersion(cluster, configuration)
 		checkClusterAutoscalerVersion(cluster, configuration)
 	},
-}
-
-func init() {
-	componentVersionCmd.AddCommand(postUpgradeCheckCmd)
-
-	postUpgradeCheckCmd.Flags().StringP("cluster", "c", "",
-		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")
-	//nolint
-	postUpgradeCheckCmd.MarkFlagRequired("cluster")
 }
 
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations) {

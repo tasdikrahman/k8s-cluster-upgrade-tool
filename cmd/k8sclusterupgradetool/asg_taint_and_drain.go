@@ -43,7 +43,7 @@ $ k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=eks-hash-va
 		configFileName, configFileType, configFilePath := toolConfig.FileMetadata()
 		configuration, err := toolConfig.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			log.Fatalln("There was an error reading config from the config file")
+			log.Fatalln(err)
 		}
 
 		log.Println("Config file used:", viper.ConfigFileUsed())

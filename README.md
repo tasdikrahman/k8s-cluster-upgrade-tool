@@ -68,7 +68,7 @@ Setting kubernetes context to valid-cluster-name
 2022/02/10 12:39:49 aws-node has been set to aws-component-version in cluster
 
 $ ./k8sclusterupgradetool component version set valid-cluster-name aws-node aws-component-version123asd
-2022/03/25 13:41:55 Config file used: /Users/t.rahman/.k8s-cluster-upgrade-tool/config.yaml
+2022/03/25 13:41:55 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:41:55 aws-node version read from config: aws-component-version
 2022/03/25 13:41:55 coredns version read from config: coredns-component-version
 2022/03/25 13:41:55 kube-proxy version read from config: kube-proxy-component-version
@@ -76,7 +76,7 @@ $ ./k8sclusterupgradetool component version set valid-cluster-name aws-node aws-
 2022/03/25 13:41:55 aws-node component version passed doesn't match the version in config, please check the value in config file
 
 $ ./k8sclusterupgradetool component version set valid-cluster-name foo-deployment vfoo-wrong-version
-2022/03/25 13:42:52 Config file used: /Users/t.rahman/.k8s-cluster-upgrade-tool/config.yaml
+2022/03/25 13:42:52 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:42:52 aws-node version read from config: aws-component-version
 2022/03/25 13:42:52 coredns version read from config: coredns-component-version
 2022/03/25 13:42:52 kube-proxy version read from config: kube-proxy-component-version

@@ -891,7 +891,7 @@ func TestRead(t *testing.T) {
 		},
 		{"when the config file is not present",
 			File{fileName: "config", fileType: "yaml", dirName: "/tmp", data: "", writeFile: false},
-			errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8s-cluster-upgrade-tool/config.yaml if not"),
+			errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8sclusterupgradetool/config.yaml if not"),
 		},
 		{"when the config file is present, but reading fails as data type inside is not yaml",
 			File{fileName: "config", fileType: "yaml", dirName: "/tmp", data: "foo baz", writeFile: true},

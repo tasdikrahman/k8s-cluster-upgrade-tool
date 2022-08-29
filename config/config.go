@@ -174,7 +174,7 @@ func Read(fileName, fileType, filePath string) (config Configurations, err error
 	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return Configurations{}, errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8s-cluster-upgrade-tool/config.yaml if not")
+			return Configurations{}, errors.New("error finding config file. Does it exist? Please create it in $HOME/.k8sclusterupgradetool/config.yaml if not")
 		} else {
 			return Configurations{}, errors.New("error reading from config file")
 		}
