@@ -21,8 +21,8 @@ $ k8sclusterupgradetool component version set -c=valid-cluster-name -k=aws-node 
 	Run: func(cmd *cobra.Command, args []string) {
 		// Parse flag values
 		cluster, _ := cmd.Flags().GetString("cluster")
-		k8sComponent, _ := cmd.Flags().GetString("k8s-component")
-		k8sComponentVersion, _ := cmd.Flags().GetString("k8s-component-version")
+		k8sComponent, _ := cmd.Flags().GetString("component-object")
+		k8sComponentVersion, _ := cmd.Flags().GetString("component-object-version")
 
 		// Read config from file
 		configFileName, configFileType, configFilePath := config.FileMetadata()
@@ -86,16 +86,16 @@ func init() {
 
 	setComponentVersionCmd.Flags().StringP("cluster", "c", "",
 		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")
-	setComponentVersionCmd.Flags().StringP("k8s-component", "k", "",
+	setComponentVersionCmd.Flags().StringP("component-object", "o", "",
 		"K8s cluster component being set, currently supported ones: eg: aws-node, cluster-autoscaler, kube-proxy, coredns")
-	setComponentVersionCmd.Flags().StringP("k8s-component-version", "v", "",
+	setComponentVersionCmd.Flags().StringP("component-object-version", "v", "",
 		"k8s component version to be set for the k8s component, currently supported ones: eg: aws-node, cluster-autoscaler, kube-proxy, coredns")
 	//nolint
 	nodeTaintAndDrainCmd.MarkFlagRequired("cluster")
 	//nolint
-	nodeTaintAndDrainCmd.MarkFlagRequired("k8s-component")
+	nodeTaintAndDrainCmd.MarkFlagRequired("component-object")
 	//nolint
-	nodeTaintAndDrainCmd.MarkFlagRequired("k8s-component-version")
+	nodeTaintAndDrainCmd.MarkFlagRequired("component-object-version")
 }
 
 func setComponentVersion(imageTag, componentName, k8sSetQueryCmdObject, componentK8sObject, containerName, namespace string) {
