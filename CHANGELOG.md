@@ -1,5 +1,27 @@
 ## CHANGELOG
 
+### v0.3.0
+
+#### Adds
+
+- commands `asg` parent command along with `taint-and-drain` being the child subcommand, which replaces,
+  `taint-and-drain-asg`.
+- commands `component`, `version` subcommand, further nested with `set` and `check` parent subcommands which
+replace `setComponentVersion` and `postUpgradeCheck`.
+
+#### Breaking change
+
+- binary names changes to `k8sclusterupgradetool`
+- the commands `setComponentVersion`, `taint-and-drain-asg`, `postUpgradeCheck` have been deprecated
+for the new commands.
+- the location of the config location changes to `$HOME/.k8sclusterupgradetool`.
+
+#### Changes
+
+- error messages fixed for displaying exact error when the config is not being read properly by the CLI
+- remove positional arguments and start taking flags for the arguments passed to component subcommands to
+reduce the overload on the user to remember which argument number comes where.
+
 ### v0.2.0
 
 #### Adds
