@@ -103,7 +103,7 @@ $ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg
 ##### With dry mode on set to false
 
 ```
-$ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-cluster-name --dry-run=false
+$ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg-hash --dry-run=false
 2022/02/16 23:54:29 Setting kubernetes context to valid-cluster-name
 2022/02/16 23:54:30 Running cordon and drain command in non-dry mode
 2022/02/16 23:54:31 Instances which are going to be tainted and drained from the ASG passed
