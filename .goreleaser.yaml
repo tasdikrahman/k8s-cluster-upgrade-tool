@@ -1,6 +1,6 @@
 builds:
-  - binary: k8s-cluster-upgrade-tool
-    id: k8s-cluster-upgrade-tool
+  - binary: k8sclusterupgradetool
+    id: k8sclusterupgradetool
     env:
       - CGO_ENABLED=0
     goos:

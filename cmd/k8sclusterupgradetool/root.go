@@ -1,4 +1,4 @@
-package cmd
+package k8sclusterupgradetool
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-	Use:   "k8s-cluster-upgrade-tool",
-	Short: "k8s-cluster-upgrade-tool",
+	Use:   "k8sclusterupgradetool",
+	Short: "k8sclusterupgradetool",
 }
 
 func Execute() {

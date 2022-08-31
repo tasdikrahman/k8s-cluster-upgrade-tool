@@ -1,4 +1,4 @@
-package cmd
+package k8sclusterupgradetool
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	K8sClusterUpgradeToolVersion = "v0.1.0"
+	K8sClusterUpgradeToolVersion = "v0.3.0"
 )
 
 var versionCmd = &cobra.Command{

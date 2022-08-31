@@ -2,11 +2,11 @@
 
 set -e
 
-mkdir ~/.k8s-cluster-upgrade-tool/
-cd ~/.k8s-cluster-upgrade-tool/
-touch ~/.k8s-cluster-upgrade-tool/config.yaml
+mkdir ~/.k8sclusterupgradetool/
+cd ~/.k8sclusterupgradetool/
+touch ~/.k8sclusterupgradetool/config.yaml
 
-cat > ~/.k8s-cluster-upgrade-tool/config.yaml <<EOF
+cat > ~/.k8sclusterupgradetool/config.yaml <<EOF
 ---
 # the values below are just one above from the test values being installed
 components:

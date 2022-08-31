@@ -17,9 +17,9 @@ Switched to context "valid-cluster-name".
 ```
 - Copy the config file over to your `$HOME` directory
 ```sh
-$ mkdir ~/.k8s-cluster-upgrade-tool/
-$ cd k8s-cluster-upgrade-tool/
-$ cp config.sample.yaml ~/.k8s-cluster-upgrade-tool/config.yaml
+$ mkdir ~/.k8sclusterupgradetool/
+$ cd k8sclusterupgradetool/
+$ cp config.sample.yaml ~/.k8sclusterupgradetool/config.yaml
 # make changes to the above file based on the versions of the components you want to check for the cluster
 ```
 
@@ -30,17 +30,17 @@ Download the binary of the latest release from [Here](https://github.com/deliver
 On macOS, you might need to whitelist the binary to be able to run it using the following command:
 
 ```
-sudo xattr -r -d com.apple.quarantine ~/path_to_binary/k8s-cluster-upgrade-tool
+sudo xattr -r -d com.apple.quarantine ~/path_to_binary/k8sclusterupgradetool
 ```
 
 #### Running post upgrade checks
 
 ```
-$ ./k8s-cluster-upgrade-tool postUpgradeCheck foo-cluster
+$ .k8sclusterupgradetool component version check -c=foo-cluster
 2022/02/10 13:50:19 Please pass a valid clusterName
 
-$ ./k8s-cluster-upgrade-tool postUpgradeCheck valid-cluster-name
-2022/03/25 13:44:15 Config file used: /Users/t.rahman/.k8s-cluster-upgrade-tool/config.yaml
+$ ./k8sclusterupgradetool component version check -c=valid-cluster-name
+2022/03/25 13:44:15 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:44:15 aws-node version read from config: aws-component-version
 2022/03/25 13:44:15 coredns version read from config: coredns-component-version
 2022/03/25 13:44:15 kube-proxy version read from config: kube-proxy-component-version
@@ -59,24 +59,24 @@ cluster-autoscaler needs to be updated, is currently on far-version, desired ver
 
 #### Setting component versions for outdated components
 ```
-$ ./k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name coredns coredns-component-version 
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -o=coredns -v=coredns-component-version
 Setting kubernetes context to valid-cluster-name
 2022/02/10 12:41:06 coredns has been set to coredns-component-version in cluster
 
-$ ./k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node aws-component-version
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node -v=aws-component-version
 Setting kubernetes context to valid-cluster-name
 2022/02/10 12:39:49 aws-node has been set to aws-component-version in cluster
 
-$ ./k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name aws-node aws-component-version123asd
-2022/03/25 13:41:55 Config file used: /Users/t.rahman/.k8s-cluster-upgrade-tool/config.yaml
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node -v=aws-component-version123asd
+2022/03/25 13:41:55 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:41:55 aws-node version read from config: aws-component-version
 2022/03/25 13:41:55 coredns version read from config: coredns-component-version
 2022/03/25 13:41:55 kube-proxy version read from config: kube-proxy-component-version
 2022/03/25 13:41:55 cluster-autoscaler version read from config: cluster-autoscaler-component-version
 2022/03/25 13:41:55 aws-node component version passed doesn't match the version in config, please check the value in config file
 
-$ ./k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name foo-deployment vfoo-wrong-version
-2022/03/25 13:42:52 Config file used: /Users/t.rahman/.k8s-cluster-upgrade-tool/config.yaml
+$ ./k8sclusterupgradetool component version set -c=valid-cluster-name -o=foo-deployment -v=vfoo-wrong-version
+2022/03/25 13:42:52 Config file used: /Users/t.rahman/.k8sclusterupgradetool/config.yaml
 2022/03/25 13:42:52 aws-node version read from config: aws-component-version
 2022/03/25 13:42:52 coredns version read from config: coredns-component-version
 2022/03/25 13:42:52 kube-proxy version read from config: kube-proxy-component-version
@@ -91,7 +91,7 @@ $ ./k8s-cluster-upgrade-tool setComponentVersion valid-cluster-name foo-deployme
 ##### With dry mode on (default set to true)
 
 ```
-$ ./k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=valid-asg-hash
+$ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg-hash
 2022/02/16 23:54:08 Setting kubernetes context to valid-cluster-name02
 2022/02/16 23:54:09 Running cordon and drain command in dry mode
 2022/02/16 23:54:09 Instances which are going to be tainted and drained from the ASG passed
@@ -103,7 +103,7 @@ $ ./k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=valid-
 ##### With dry mode on set to false
 
 ```
-$ ./k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=valid-cluster-name --dry-run=false
+$ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg-hash --dry-run=false
 2022/02/16 23:54:29 Setting kubernetes context to valid-cluster-name
 2022/02/16 23:54:30 Running cordon and drain command in non-dry mode
 2022/02/16 23:54:31 Instances which are going to be tainted and drained from the ASG passed

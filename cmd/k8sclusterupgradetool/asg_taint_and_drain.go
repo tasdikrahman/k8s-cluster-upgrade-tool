@@ -1,4 +1,4 @@
-package cmd
+package k8sclusterupgradetool
 
 import (
 	"context"
@@ -14,9 +14,9 @@ import (
 var DryRunFlag bool
 
 var nodeTaintAndDrainCmd = &cobra.Command{
-	Use:   "taint-and-drain-asg",
+	Use:   "taint-and-drain",
 	Short: "Taints and drains nodes from ASG",
-	Long: `taint-and-drain-asg helps you taint and drain an ASG in an automated fashion by taking input of the ASG name, nodes of
+	Long: `k8sclusterupgradetool helps you taint and drain an ASG in an automated fashion by taking input of the ASG name, nodes of
 which you would want to drain and taint later.
 
 It first sets the max instance count of the ASG to the current desired count.
@@ -24,15 +24,15 @@ taints the nodes in the ASG
 drains the nodes in the ASG
 
 Usage:
-$ k8s-cluster-upgrade-tool taint-and-drain-asg -c=CLUSTER_NAME -a=ASG_NAME
+$ k8sclusterupgradetool asg taint-and-drain -c=CLUSTER_NAME -a=ASG_NAME
 
 Example:
-$ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=valid-cluster-name-spot-hash
-$ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=valid-cluster-name-spot-hash --dry-run=false
+$ k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-cluster-name-spot-hash
+$ k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-cluster-name-spot-hash --dry-run=false
 
 For a managed node group, we need to pass the exact ASG resource name, rather than the one which shows up on the EKS console
-$ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=valid-cluster-name-foo-name // incorrect
-$ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash-value-asg-name // correct
+$ k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-cluster-name-foo-name // incorrect
+$ k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=eks-hash-value-asg-name // correct
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		cluster, _ := cmd.Flags().GetString("cluster")
@@ -43,7 +43,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 		configFileName, configFileType, configFilePath := toolConfig.FileMetadata()
 		configuration, err := toolConfig.Read(configFileName, configFileType, configFilePath)
 		if err != nil {
-			log.Fatalln("There was an error reading config from the config file")
+			log.Fatalln(err)
 		}
 
 		log.Println("Config file used:", viper.ConfigFileUsed())
@@ -122,7 +122,7 @@ $ k8s-cluster-upgrade-tool taint-and-drain-asg -c=valid-cluster-name -a=eks-hash
 }
 
 func init() {
-	RootCmd.AddCommand(nodeTaintAndDrainCmd)
+	asgCmd.AddCommand(nodeTaintAndDrainCmd)
 
 	nodeTaintAndDrainCmd.Flags().StringP("cluster", "c", "",
 		"Example cluster name input valid-cluster-name, check with team for a full list of valid clusters")
