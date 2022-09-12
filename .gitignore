@@ -10,6 +10,7 @@
 .idea/*
 
 k8sclusterupgradetool
+k8s-cluster-upgrade-tool
 
 # Test binary, built with `go test -c`
 *.test
