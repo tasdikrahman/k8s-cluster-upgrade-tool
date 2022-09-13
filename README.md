@@ -1,11 +1,11 @@
-## k8s-cluster-upgrade-tool
+# k8s-cluster-upgrade-tool
 
 The tool allows you to 
 - check for the components installed in the cluster and see whether everything is running in the required version or not and if not
 - Set the component running in the cluster to the desired version.
 - taint and drain the nodes for an ASG
 
-### Pre-requisite setup
+## Pre-requisite setup
 
 - The cli supports both mac and Linux machines at the moment. You can download the respective binaries from the releases page.
 - You have logged into the particular `AWS_PROFILE`, using the authz/authn mechanism, and your user has permissions to modify ASG's for your account and region.
@@ -23,7 +23,7 @@ $ cp config.sample.yaml ~/.k8sclusterupgradetool/config.yaml
 # make changes to the above file based on the versions of the components you want to check for the cluster
 ```
 
-### Install
+## Install
 
 3 ways to install `k8s-cluster-upgrade-tool`:
 
@@ -37,7 +37,9 @@ On macOS, you might need to whitelist the binary to be able to run it using the 
 sudo xattr -r -d com.apple.quarantine ~/path_to_binary/k8sclusterupgradetool
 ```
 
-#### Running post upgrade checks
+## Usage
+
+### Running post upgrade checks
 
 ```
 $ .k8sclusterupgradetool component version check -c=foo-cluster
@@ -61,7 +63,8 @@ Checking cluster-autoscaler version
 cluster-autoscaler needs to be updated, is currently on far-version, desired version: cluster-autoscaler-component-version
 ```
 
-#### Setting component versions for outdated components
+### Setting component versions for outdated components
+
 ```
 $ ./k8sclusterupgradetool component version set -c=valid-cluster-name -o=coredns -v=coredns-component-version
 Setting kubernetes context to valid-cluster-name
@@ -88,11 +91,11 @@ $ ./k8sclusterupgradetool component version set -c=valid-cluster-name -o=foo-dep
 2022/03/25 13:42:52 please pass a valid component name from this list [coredns, cluster-autoscaler, kube-proxy, aws-node]
 ```
 
-#### Taint and drain nodes
+### Taint and drain nodes
 
 **NOTE** as a side effect of this command, the tool also modifies size of the max instance size of the ASG to be set to current desired instance count to prevent the ASG being drained to scale up during the upgrade process.
 
-##### With dry mode on (default set to true)
+### With dry mode on (default set to true)
 
 ```
 $ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg-hash
@@ -104,7 +107,7 @@ $ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg
 2022/02/16 23:54:09 {"InstanceId":"i-far","PrivateDNS":"ip-far.eu-west-1.compute.internal","AsgName":"valid-asg-hash"}
 ```
 
-##### With dry mode on set to false
+### With dry mode on set to false
 
 ```
 $ ./k8sclusterupgradetool asg taint-and-drain -c=valid-cluster-name -a=valid-asg-hash --dry-run=false
