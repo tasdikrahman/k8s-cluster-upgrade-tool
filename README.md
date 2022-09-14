@@ -28,8 +28,8 @@ $ cp config.sample.yaml ~/.k8sclusterupgradetool/config.yaml
 3 ways to install `k8s-cluster-upgrade-tool`:
 
 1. Download a binary of the latest release from [Here](https://github.com/deliveryhero/k8s-cluster-upgrade-tool/releases).
-2. Install latest from master: `cd k8s-cluster-upgrade-tool; go build -o k8sclusterupgradetool`
-3. Build locally after checking out repo: `cd k8s-cluster-upgrade-tool; go build`
+2. Install latest from master: `go install github.com/deliveryhero/k8s-cluster-upgrade-tool@latest`
+3. Build locally after checking out repo: `cd k8s-cluster-upgrade-tool; go build -o k8sclusterupgradetool`
 
 On macOS, you might need to whitelist the binary to be able to run it using the following command:
 
