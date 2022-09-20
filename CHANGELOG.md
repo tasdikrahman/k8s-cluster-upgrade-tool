@@ -1,5 +1,18 @@
 ## CHANGELOG
 
+### v0.4.0
+
+#### Adds
+
+- client-go for the commands flow for `component version check` and `component version set`, which were earlier using
+  the command line outputs parsed to further proceed, which was prone to errors as reported by some users.
+- e2e tests for `component version set` and it's verification for components aws-node, coredns, cluster-autoscaler, kube-proxy.
+
+#### Changes
+
+- removes the functions `KubectlGetImageCommand`, `KubectlSetImageCommand` as they are not used anymore with their interactions
+  replaced with client-go interactions
+
 ### v0.3.0
 
 #### Adds
