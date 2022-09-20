@@ -151,7 +151,7 @@ func GetContainerImageForK8sObject(k8sClient kubernetes.Interface, k8sObjectName
 		if k8sErrors.IsNotFound(err) {
 			return "", fmt.Errorf("daemonset %s in namespace %s not found\n", k8sObjectName, namespace)
 		} else if statusError, isStatus := err.(*k8sErrors.StatusError); isStatus {
-			return "", fmt.Errorf(fmt.Sprintf("Error getting deployment %s in namespace %s: %v\n",
+			return "", fmt.Errorf(fmt.Sprintf("Error getting daemonset %s in namespace %s: %v\n",
 				k8sObjectName, namespace, statusError.ErrStatus.Message))
 		} else if err != nil {
 			return "", fmt.Errorf("there was an error while retrieving the container image")

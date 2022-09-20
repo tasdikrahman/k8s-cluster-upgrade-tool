@@ -91,9 +91,10 @@ func TestGetContainerImageForK8sObjectWhenK8sObjectIsDeployment(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			client := fake.NewSimpleClientset(tt.args.deployment)
 
-			got, _ := GetContainerImageForK8sObject(client, tt.args.k8sObjectName, tt.args.k8sObject, tt.args.namespace)
+			got, err := GetContainerImageForK8sObject(client, tt.args.k8sObjectName, tt.args.k8sObject, tt.args.namespace)
 
 			assert.Equal(t, tt.output, got)
+			assert.Equal(t, tt.err, err)
 		})
 	}
 }
@@ -137,10 +138,10 @@ func TestGetContainerImageForK8sObjectWhenK8sObjectIsDaemonSet(t *testing.T) {
 		},
 		{
 			name: "When the object is of type daemonset, the objectname is aws-node, object doesn't exist, returns back error",
-			args: daemonSetArgs{k8sObject: "deployment", k8sObjectName: "aws-node", kubeContext: "test-context", namespace: "kube-system",
+			args: daemonSetArgs{k8sObject: "daemonset", k8sObjectName: "aws-node", kubeContext: "test-context", namespace: "kube-system",
 				daemonSet: &appsv1.DaemonSet{}},
 			output: "",
-			err:    errors.New("daemonSet aws-node in namespace kube-system not found\n"),
+			err:    errors.New("daemonset aws-node in namespace kube-system not found\n"),
 		},
 	}
 
@@ -148,9 +149,10 @@ func TestGetContainerImageForK8sObjectWhenK8sObjectIsDaemonSet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			client := fake.NewSimpleClientset(tt.args.daemonSet)
 
-			got, _ := GetContainerImageForK8sObject(client, tt.args.k8sObjectName, tt.args.k8sObject, tt.args.namespace)
+			got, err := GetContainerImageForK8sObject(client, tt.args.k8sObjectName, tt.args.k8sObject, tt.args.namespace)
 
 			assert.Equal(t, tt.output, got)
+			assert.Equal(t, tt.err, err)
 		})
 	}
 }
