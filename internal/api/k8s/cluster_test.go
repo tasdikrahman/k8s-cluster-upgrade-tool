@@ -23,13 +23,13 @@ func TestParseComponentImage(t *testing.T) {
 		err  error
 	}{
 		{"when getComponentImageTag is passed with a valid output and imageSection and it returns the image tag",
-			args{"'my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni:my-version'", "imageTag"},
+			args{"my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni:my-version", "imageTag"},
 			"my-version", nil},
 		{"when getComponentImageTag is passed with a valid output and imagePrefix and it returns the image tag",
-			args{"'my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni:my-version'", "imagePrefix"},
+			args{"my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni:my-version", "imagePrefix"},
 			"my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni", nil},
 		{"when getComponentImageTag is passed with a valid output and imagePrefix and it returns the image tag",
-			args{"'my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni:my-version'", "foo"},
+			args{"my-hash.dkr.ecr.eu-west-1.amazonaws.com/amazon-k8s-cni:my-version", "foo"},
 			"", errors.New("invalid imageSection Passed")},
 	}
 	for _, tt := range tests {

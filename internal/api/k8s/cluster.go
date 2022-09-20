@@ -19,9 +19,9 @@ import (
 
 func ParseComponentImage(kubectlExecOutput string, imageSection string) (string, error) {
 	if imageSection == "imageTag" {
-		return strings.Trim(strings.Split(kubectlExecOutput, ":")[1], "'"), nil
+		return strings.Split(kubectlExecOutput, ":")[1], nil
 	} else if imageSection == "imagePrefix" {
-		return strings.Trim(strings.Split(kubectlExecOutput, ":")[0], "'"), nil
+		return strings.Split(kubectlExecOutput, ":")[0], nil
 	} else {
 		return "", errors.New("invalid imageSection Passed")
 	}
