@@ -99,60 +99,67 @@ func buildConfigFromFlags(context, kubeconfigPath string) (*rest.Config, error) 
 		}).ClientConfig()
 }
 
-// GetContainerImageForK8sObject is used to return  the container image from for the object
-// Supports deployment and Daemonsets as of now for apps/v1 api
-//
-// Usage:
-// image, err := k8s.GetContainerImageForK8sObject("cluster-name", "aws-node", "daemonset", "kube-system")
-func GetContainerImageForK8sObject(kubeContext, k8sObjectName, k8sObject, namespace string) (string, error) {
-	var kubeconfig *string
+// KubeClientInit returns back clientSet
+func KubeClientInit(kubeContext string) (*kubernetes.Clientset, error) {
+	var kubeConfig *string
 	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+		kubeConfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
 	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+		kubeConfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
 	flag.Parse()
 
-	config, err := buildConfigFromFlags(kubeContext, *kubeconfig)
+	config, err := buildConfigFromFlags(kubeContext, *kubeConfig)
 	if err != nil {
-		return "", errors.New("error building the config for building the client-set for client-go")
+		return &kubernetes.Clientset{}, errors.New("error building the config for building the client-set for client-go")
 	}
 
 	// create the clientset
-	clientset, err := kubernetes.NewForConfig(config)
+	clientSet, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		return "", errors.New("error building the client-set for client-go")
+		return &kubernetes.Clientset{}, errors.New("error building the client-set for client-go")
 	}
+	return clientSet, nil
+}
 
-	if k8sObject == "deployment" {
+// GetContainerImageForK8sObject is used to return  the container image from for the object
+// Supports deployment and Daemonsets as of now for apps/v1 api
+// The clienset would have already been initialized with the specific k8s context to be used with
+//
+// Usage:
+// kubeClient, _ := k8s.KubeClientInit("cluster-name")
+// containerImage, _ := k8s.GetContainerImageForK8sObject(kubeClient, "aws-node", "daemonset", "kube-system")
+func GetContainerImageForK8sObject(k8sClient *kubernetes.Clientset, k8sObjectName, k8sObject, namespace string) (string, error) {
+	switch k8sObject {
+	case "deployment":
 		// NOTE: Not targeting other api versions for the objects as of now.
-		deployment, err := clientset.AppsV1().Deployments(namespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
+		deployment, err := k8sClient.AppsV1().Deployments(namespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
 		if k8sErrors.IsNotFound(err) {
-			return "", errors.New(fmt.Sprintf("Deployment %s in namespace %s not found\n", k8sObjectName, namespace))
+			return "", fmt.Errorf("Deployment %s in namespace %s not found\n", k8sObjectName, namespace)
 		} else if statusError, isStatus := err.(*k8sErrors.StatusError); isStatus {
-			return "", errors.New(fmt.Sprintf("Error getting deployment %s in namespace %s: %v\n",
-				k8sObjectName, namespace, statusError.ErrStatus.Message))
+			return "", fmt.Errorf("Error getting deployment %s in namespace %s: %v\n",
+				k8sObjectName, namespace, statusError.ErrStatus.Message)
 		} else if err != nil {
-			return "", errors.New("there was an error while retrieving the container image")
+			return "", fmt.Errorf("there was an error while retrieving the container image")
 		}
 
 		// NOTE: This assumes there is only one container in the k8s object, which is true for the components for us at moment
 		return deployment.Spec.Template.Spec.Containers[0].Image, nil
-	} else if k8sObject == "daemonset" {
+	case "daemonset":
 		// NOTE: Not targeting other api versions for the objects as of now.
-		daemonset, err := clientset.AppsV1().DaemonSets(namespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
+		daemonset, err := k8sClient.AppsV1().DaemonSets(namespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
 		if k8sErrors.IsNotFound(err) {
-			return "", errors.New(fmt.Sprintf("Daemonset %s in namespace %s not found\n", k8sObjectName, namespace))
+			return "", fmt.Errorf("Daemonset %s in namespace %s not found\n", k8sObjectName, namespace)
 		} else if statusError, isStatus := err.(*k8sErrors.StatusError); isStatus {
-			return "", errors.New(fmt.Sprintf("Error getting deployment %s in namespace %s: %v\n",
+			return "", fmt.Errorf(fmt.Sprintf("Error getting deployment %s in namespace %s: %v\n",
 				k8sObjectName, namespace, statusError.ErrStatus.Message))
 		} else if err != nil {
-			return "", errors.New("there was an error while retrieving the container image")
+			return "", fmt.Errorf("there was an error while retrieving the container image")
 		}
 
 		// NOTE: This assumes there is only one container in the k8s object, which is true for the components for us at moment
 		return daemonset.Spec.Template.Spec.Containers[0].Image, nil
-	} else {
-		return "", errors.New("please choose between Daemonset or Deployment k8sobject as they are currently supported")
+	default:
+		return "", fmt.Errorf("please choose between Daemonset or Deployment k8sobject as they are currently supported")
 	}
 }
