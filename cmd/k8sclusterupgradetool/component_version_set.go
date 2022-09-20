@@ -115,7 +115,7 @@ func setComponentVersion(k8sClient kubernetes.Interface, imageTag, componentName
 
 	err = k8s.SetK8sObjectImage(k8sClient, componentK8sObject, componentName, containerName, containerImage, namespace)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
 	log.Printf("%s has been set to %s in cluster \n", componentName, imageTag)
