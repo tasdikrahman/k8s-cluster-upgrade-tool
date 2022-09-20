@@ -18,6 +18,8 @@ import (
 	"strings"
 )
 
+// ParseComponentImage takes in the full container image and returns back the container tag or the container image
+// based on the argument received
 func ParseComponentImage(kubectlExecOutput string, imageSection string) (string, error) {
 	if imageSection == "imageTag" {
 		return strings.Split(kubectlExecOutput, ":")[1], nil
@@ -28,31 +30,7 @@ func ParseComponentImage(kubectlExecOutput string, imageSection string) (string,
 	}
 }
 
-// TODO add spec for this
-func KubectlGetImageCommand(k8sObject, component, namespace string) string {
-	return fmt.Sprintf(`
-	kubectl
-	get
-	%s
-	%s
-	--namespace %s
-	-o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-	`, k8sObject, component, namespace)
-}
-
-// TODO add spec for this
-func KubectlSetImageCommand(k8sObject, componentName, containerImage, namespace string) string {
-	return fmt.Sprintf(`
-	kubectl
-	set
-	image
-	%s
-	--namespace %s
-	%s=%s
-	`, k8sObject, componentName, containerImage, namespace)
-}
-
-// TODO add spec for this
+// TODO replace this with client-go
 func KubectlTaintNodeCommand(node string) string {
 	// Format: kubectl taint nodes NODE key=value:NoSchedule
 	return fmt.Sprintf(`
@@ -64,7 +42,7 @@ func KubectlTaintNodeCommand(node string) string {
 	`, node)
 }
 
-// TODO add spec for this
+// TODO replace this with client-go
 func KubectlDrainNodeCommand(node string) string {
 	// Format: kubectl drain --ignore-daemonsets --force --delete-local-data <node name>
 	return fmt.Sprintf(`
@@ -77,7 +55,7 @@ func KubectlDrainNodeCommand(node string) string {
 	`, node)
 }
 
-// TODO add spec for this
+// TODO replace this with client-go
 func SetK8sContext(clusterName string) {
 	command := "kubectl"
 	arg01 := "config"

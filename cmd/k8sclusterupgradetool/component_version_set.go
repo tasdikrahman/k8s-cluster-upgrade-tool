@@ -104,7 +104,7 @@ func setComponentVersion(k8sClient kubernetes.Interface, imageTag, componentName
 	// get current imagePrefix
 	currentContainerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, componentName, componentK8sObject, namespace)
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the aws-node component")
+		log.Fatalln("Error: there was an error while retrieving the container image")
 	}
 
 	imagePrefix, err := k8s.ParseComponentImage(currentContainerImage, "imagePrefix")
