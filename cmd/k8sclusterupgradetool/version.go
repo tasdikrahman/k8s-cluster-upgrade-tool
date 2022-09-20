@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	K8sClusterUpgradeToolVersion = "v0.3.0"
+	K8sClusterUpgradeToolVersion = "v0.4.0"
 )
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Shows the version of the release of k8s-cluster-upgrade-tool binary",
+	Short: "Shows the version of the release of k8sclusterupgradetool binary",
 	Args:  cobra.MaximumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Version: ", K8sClusterUpgradeToolVersion)
