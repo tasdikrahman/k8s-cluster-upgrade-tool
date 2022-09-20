@@ -64,7 +64,7 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 
 	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the aws-node component")
+		log.Fatalf("Error: there was an issue while retrieving the information from the cluster for the aws-node component: %v\n", err)
 	}
 
 	imageTag, err := k8s.ParseComponentImage(containerImage, "imageTag")
@@ -89,7 +89,7 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 
 	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the kube-proxy component")
+		log.Fatalf("Error: there was an issue while retrieving the information from the cluster for the kube-proxy component, %v\n", err)
 	}
 
 	imageTag, err := k8s.ParseComponentImage(containerImage, "imageTag")
@@ -114,7 +114,7 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 
 	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the coredns component")
+		log.Fatalf("Error: there was an issue while retrieving the information from the cluster for the coredns component: %v\n", err)
 	}
 
 	imageTag, err := k8s.ParseComponentImage(containerImage, "imageTag")
@@ -139,7 +139,7 @@ func checkClusterAutoscalerVersion(clusterName string, configuration config.Conf
 
 	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
-		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component")
+		log.Fatalf("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component: %v\n", err)
 	}
 
 	imageTag, err := k8s.ParseComponentImage(containerImage, "imageTag")
