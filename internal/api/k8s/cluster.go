@@ -166,7 +166,8 @@ func GetContainerImageForK8sObject(k8sClient kubernetes.Interface, k8sObjectName
 }
 
 // SetK8sObjectImage will set the image version for the deployment/daemonset object requested to update for
-func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName, containerImage, k8sNamespace string) error {
+func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName, containerName, containerImage, k8sNamespace string) error {
+	containerFound := false
 	switch k8sObject {
 	case "deployment":
 		retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
@@ -177,7 +178,16 @@ func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName,
 				return fmt.Errorf("failed to get latest version of Deployment: %v", getErr)
 			}
 
-			result.Spec.Template.Spec.Containers[0].Image = containerImage // update container image
+			for containerNumber, candidateContainer := range result.Spec.Template.Spec.Containers {
+				if candidateContainer.Name == containerName {
+					containerFound = true
+					result.Spec.Template.Spec.Containers[containerNumber].Image = containerImage // update container image
+				}
+			}
+			if containerFound == false {
+				return fmt.Errorf("container %s was not found in the deployment object, skipping update", containerName)
+			}
+
 			_, updateErr := k8sClient.AppsV1().Deployments(k8sNamespace).Update(context.TODO(), result, metav1.UpdateOptions{})
 			return updateErr
 		})
@@ -194,7 +204,15 @@ func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName,
 				return fmt.Errorf("failed to get latest version of Daemonset: %v", getErr)
 			}
 
-			result.Spec.Template.Spec.Containers[0].Image = containerImage // update container image
+			for containerNumber, candidateContainer := range result.Spec.Template.Spec.Containers {
+				if candidateContainer.Name == containerName {
+					containerFound = true
+					result.Spec.Template.Spec.Containers[containerNumber].Image = containerImage // update container image
+				}
+			}
+			if containerFound == false {
+				return fmt.Errorf("container %s was not found in the daemonset object, skipping update", containerName)
+			}
 			_, updateErr := k8sClient.AppsV1().DaemonSets(k8sNamespace).Update(context.TODO(), result, metav1.UpdateOptions{})
 			return updateErr
 		})
