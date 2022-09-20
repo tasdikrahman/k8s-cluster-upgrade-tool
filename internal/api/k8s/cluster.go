@@ -184,7 +184,7 @@ func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName,
 					result.Spec.Template.Spec.Containers[containerNumber].Image = containerImage // update container image
 				}
 			}
-			if containerFound == false {
+			if !containerFound {
 				return fmt.Errorf("container %s was not found in the deployment object, skipping update", containerName)
 			}
 
@@ -210,7 +210,7 @@ func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName,
 					result.Spec.Template.Spec.Containers[containerNumber].Image = containerImage // update container image
 				}
 			}
-			if containerFound == false {
+			if !containerFound {
 				return fmt.Errorf("container %s was not found in the daemonset object, skipping update", containerName)
 			}
 			_, updateErr := k8sClient.AppsV1().DaemonSets(k8sNamespace).Update(context.TODO(), result, metav1.UpdateOptions{})
