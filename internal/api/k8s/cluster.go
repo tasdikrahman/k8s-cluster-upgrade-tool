@@ -129,7 +129,7 @@ func KubeClientInit(kubeContext string) (*kubernetes.Clientset, error) {
 // Usage:
 // kubeClient, _ := k8s.KubeClientInit("cluster-name")
 // containerImage, _ := k8s.GetContainerImageForK8sObject(kubeClient, "aws-node", "daemonset", "kube-system")
-func GetContainerImageForK8sObject(k8sClient *kubernetes.Clientset, k8sObjectName, k8sObject, namespace string) (string, error) {
+func GetContainerImageForK8sObject(k8sClient kubernetes.Interface, k8sObjectName, k8sObject, namespace string) (string, error) {
 	switch k8sObject {
 	case "deployment":
 		// NOTE: Not targeting other api versions for the objects as of now.
@@ -147,9 +147,9 @@ func GetContainerImageForK8sObject(k8sClient *kubernetes.Clientset, k8sObjectNam
 		return deployment.Spec.Template.Spec.Containers[0].Image, nil
 	case "daemonset":
 		// NOTE: Not targeting other api versions for the objects as of now.
-		daemonset, err := k8sClient.AppsV1().DaemonSets(namespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
+		daemonSet, err := k8sClient.AppsV1().DaemonSets(namespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
 		if k8sErrors.IsNotFound(err) {
-			return "", fmt.Errorf("Daemonset %s in namespace %s not found\n", k8sObjectName, namespace)
+			return "", fmt.Errorf("daemonset %s in namespace %s not found\n", k8sObjectName, namespace)
 		} else if statusError, isStatus := err.(*k8sErrors.StatusError); isStatus {
 			return "", fmt.Errorf(fmt.Sprintf("Error getting deployment %s in namespace %s: %v\n",
 				k8sObjectName, namespace, statusError.ErrStatus.Message))
@@ -158,7 +158,7 @@ func GetContainerImageForK8sObject(k8sClient *kubernetes.Clientset, k8sObjectNam
 		}
 
 		// NOTE: This assumes there is only one container in the k8s object, which is true for the components for us at moment
-		return daemonset.Spec.Template.Spec.Containers[0].Image, nil
+		return daemonSet.Spec.Template.Spec.Containers[0].Image, nil
 	default:
 		return "", fmt.Errorf("please choose between Daemonset or Deployment k8sobject as they are currently supported")
 	}
