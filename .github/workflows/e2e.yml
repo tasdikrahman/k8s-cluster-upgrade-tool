@@ -53,3 +53,8 @@ jobs:
       - name: Run Post upgrade check command on the cluster
         run: ./e2e/component-version-check.sh
 
+      - name: Run component version set command for cluster-autoscaler
+        run: ./e2e/component-version-set-cluster-autoscaler.sh
+
+      - name: Run check to verify if component version set command for cluster-autoscaler worked
+        run: ./e2e/component-version-check-cluster-autoscaler-compare-final-version.sh
