@@ -156,3 +156,196 @@ func TestGetContainerImageForK8sObjectWhenK8sObjectIsDaemonSet(t *testing.T) {
 		})
 	}
 }
+
+func TestSetK8sObjectImageWhenObjectIsDeployment(t *testing.T) {
+	type deploymentArgs struct {
+		k8sObject            string
+		k8sObjectName        string
+		kubeContext          string
+		namespace            string
+		targetContainerImage string
+		targetContainerName  string
+		deployment           *appsv1.Deployment
+	}
+	tests := []struct {
+		name string
+		args deploymentArgs
+		err  error
+	}{
+		{
+			name: "when the deployment is present and containerName to be updated is also present, the update call goes through",
+			args: deploymentArgs{
+				k8sObject:            "deployment",
+				k8sObjectName:        "cluster-autoscaler",
+				kubeContext:          "test-kubecontext",
+				namespace:            "kube-system",
+				targetContainerImage: "v1.targetversion",
+				targetContainerName:  "cluster-autoscaler-container",
+				deployment: &appsv1.Deployment{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "cluster-autoscaler",
+						Namespace: "kube-system",
+					},
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Name:  "cluster-autoscaler-container",
+										Image: "cluster-autoscaler:v1.0.0",
+									},
+								},
+							},
+						},
+					},
+				}},
+			err: nil,
+		},
+		{
+			name: "when the deployment is present but the targetContainerName is not present in the deployment",
+			args: deploymentArgs{
+				k8sObject:            "deployment",
+				k8sObjectName:        "cluster-autoscaler",
+				kubeContext:          "test-kubecontext",
+				namespace:            "kube-system",
+				targetContainerImage: "v1.targetversion",
+				targetContainerName:  "incorrect-target-container",
+				deployment: &appsv1.Deployment{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "cluster-autoscaler",
+						Namespace: "kube-system",
+					},
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Name:  "correct-cluster-autoscaler-container",
+										Image: "cluster-autoscaler:v1.0.0",
+									},
+								},
+							},
+						},
+					},
+				}},
+			err: errors.New("container image update failed: container incorrect-target-container was not found in the deployment object, skipping update"),
+		},
+		{
+			name: "when the deployment is not present and the update call fails",
+			args: deploymentArgs{
+				k8sObject:            "deployment",
+				k8sObjectName:        "cluster-autoscaler",
+				kubeContext:          "test-kubecontext",
+				namespace:            "kube-system",
+				targetContainerImage: "v1.targetversion",
+				deployment:           &appsv1.Deployment{}},
+			err: errors.New("container image update failed: failed to get latest version of Deployment: deployments.apps \"cluster-autoscaler\" not found"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := fake.NewSimpleClientset(tt.args.deployment)
+			err := SetK8sObjectImage(client, tt.args.k8sObject, tt.args.k8sObjectName, tt.args.targetContainerName, tt.args.targetContainerImage, tt.args.namespace)
+
+			assert.Equal(t, tt.err, err)
+		})
+	}
+}
+
+func TestSetK8sObjectImageWhenObjectIsDaemonSet(t *testing.T) {
+	type daemonSetArgs struct {
+		k8sObject            string
+		k8sObjectName        string
+		kubeContext          string
+		namespace            string
+		targetContainerImage string
+		targetContainerName  string
+		daemonSet            *appsv1.DaemonSet
+	}
+	tests := []struct {
+		name string
+		args daemonSetArgs
+		err  error
+	}{
+		{
+			name: "when the daemonset and the respective container to be updated is present and the update call goes through",
+			args: daemonSetArgs{
+				k8sObject:            "daemonset",
+				k8sObjectName:        "aws-node",
+				kubeContext:          "test-kubecontext",
+				namespace:            "kube-system",
+				targetContainerImage: "v1.targetversion",
+				targetContainerName:  "aws-node",
+				daemonSet: &appsv1.DaemonSet{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "aws-node",
+						Namespace: "kube-system",
+					},
+					Spec: appsv1.DaemonSetSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Name:  "aws-node",
+										Image: "aws-node:v1.0.0",
+									},
+								},
+							},
+						},
+					},
+				}},
+			err: nil,
+		},
+		{
+			name: "when the daemonset is present but the target container to be updated is not present, update call is skipped",
+			args: daemonSetArgs{
+				k8sObject:            "daemonset",
+				k8sObjectName:        "aws-node",
+				kubeContext:          "test-kubecontext",
+				namespace:            "kube-system",
+				targetContainerImage: "v1.targetversion",
+				targetContainerName:  "incorrect-target-container-node",
+				daemonSet: &appsv1.DaemonSet{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "aws-node",
+						Namespace: "kube-system",
+					},
+					Spec: appsv1.DaemonSetSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Name:  "aws-node",
+										Image: "aws-node:v1.0.0",
+									},
+								},
+							},
+						},
+					},
+				}},
+			err: errors.New("container image update failed: container incorrect-target-container-node was not found in the daemonset object, skipping update"),
+		},
+		{
+			name: "when the daemonset is not present and the update call fails",
+			args: daemonSetArgs{
+				k8sObject:            "daemonset",
+				k8sObjectName:        "aws-node",
+				kubeContext:          "test-kubecontext",
+				namespace:            "kube-system",
+				targetContainerImage: "v1.targetversion",
+				targetContainerName:  "target-container-name",
+				daemonSet:            &appsv1.DaemonSet{}},
+			err: errors.New("container image update failed: failed to get latest version of Daemonset: daemonsets.apps \"aws-node\" not found"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := fake.NewSimpleClientset(tt.args.daemonSet)
+			err := SetK8sObjectImage(client, tt.args.k8sObject, tt.args.k8sObjectName, tt.args.targetContainerName, tt.args.targetContainerImage, tt.args.namespace)
+
+			assert.Equal(t, tt.err, err)
+		})
+	}
+}

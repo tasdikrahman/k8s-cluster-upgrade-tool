@@ -57,11 +57,11 @@ $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 
 func checkAwsNodeComponentVersion(clusterName string, configuration config.Configurations, k8sClient kubernetes.Interface) {
 	log.Println("Checking aws-node version")
-	// TODO: Change this to use to k8s client-go
 	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "aws-node")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
+
 	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the aws-node component")
@@ -71,6 +71,7 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 	if err != nil {
 		log.Fatalln("Error: there was an error parsing the image from the parsed command output")
 	}
+
 	if imageTag == viper.Get("components.aws-node") {
 		log.Printf("AWS Node Version on %s ✓ \n", viper.Get("components.aws-node"))
 	} else {
@@ -81,13 +82,12 @@ func checkAwsNodeComponentVersion(clusterName string, configuration config.Confi
 
 func checkKubeProxyComponentVersion(clusterName string, configuration config.Configurations, k8sClient kubernetes.Interface) {
 	log.Println("Checking kube-proxy version")
-	// TODO: Change this to use to k8s client-go
 	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "kube-proxy")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 
+	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the kube-proxy component")
 	}
@@ -107,13 +107,12 @@ func checkKubeProxyComponentVersion(clusterName string, configuration config.Con
 
 func checkCoreDnsComponentVersion(clusterName string, configuration config.Configurations, k8sClient kubernetes.Interface) {
 	log.Println("Checking coredns version")
-	// TODO: Change this to use to k8s client-go
 	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "coredns")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 
+	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the coredns component")
 	}
@@ -133,13 +132,12 @@ func checkCoreDnsComponentVersion(clusterName string, configuration config.Confi
 
 func checkClusterAutoscalerVersion(clusterName string, configuration config.Configurations, k8sClient kubernetes.Interface) {
 	log.Println("Checking cluster-autoscaler version")
-	// TODO: Change this to use to k8s client-go
 	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, "cluster-autoscaler")
 	if err != nil {
 		log.Fatalln("Error: there was an error while retrieving the k8sobject name and object type from the config")
 	}
-	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 
+	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
 		log.Fatalln("Error: there was an issue while retrieving the information from the cluster for the cluster-autoscaler component")
 	}

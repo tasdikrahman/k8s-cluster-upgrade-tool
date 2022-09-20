@@ -53,3 +53,30 @@ jobs:
       - name: Run Post upgrade check command on the cluster
         run: ./e2e/component-version-check.sh
 
+      # component set version and verification for cluster-autoscaler
+      - name: Run component version set command for cluster-autoscaler
+        run: ./e2e/component-version-set-cluster-autoscaler.sh
+
+      - name: Run check to verify if component version set command for cluster-autoscaler worked
+        run: ./e2e/component-version-check-cluster-autoscaler-compare-final-version.sh
+
+      # component set version and verification for aws-node
+      - name: Run component version set command for aws-node
+        run: ./e2e/component-version-set-aws-node.sh
+
+      - name: Run check to verify if component version set command for aws-node worked
+        run: ./e2e/component-version-check-aws-node-compare-final-version.sh
+
+      # component set version and verification for coredns
+      - name: Run component version set command for coredns
+        run: ./e2e/component-version-set-coredns.sh
+
+      - name: Run check to verify if component version set command for coredns worked
+        run: ./e2e/component-version-check-coredns-compare-final-version.sh
+
+      # component set version and verification for kube-proxy
+      - name: Run component version set command for kube-proxy
+        run: ./e2e/component-version-set-kube-proxy.sh
+
+      - name: Run check to verify if component version set command for kube-proxy worked
+        run: ./e2e/component-version-check-kube-proxy-compare-final-version.sh

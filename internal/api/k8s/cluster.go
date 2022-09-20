@@ -11,12 +11,15 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"k8s.io/client-go/util/retry"
 	"log"
 	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
+// ParseComponentImage takes in the full container image and returns back the container tag or the container image
+// based on the argument received
 func ParseComponentImage(kubectlExecOutput string, imageSection string) (string, error) {
 	if imageSection == "imageTag" {
 		return strings.Split(kubectlExecOutput, ":")[1], nil
@@ -27,31 +30,7 @@ func ParseComponentImage(kubectlExecOutput string, imageSection string) (string,
 	}
 }
 
-// TODO add spec for this
-func KubectlGetImageCommand(k8sObject, component, namespace string) string {
-	return fmt.Sprintf(`
-	kubectl
-	get
-	%s
-	%s
-	--namespace %s
-	-o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-	`, k8sObject, component, namespace)
-}
-
-// TODO add spec for this
-func KubectlSetImageCommand(k8sObject, componentName, containerImage, namespace string) string {
-	return fmt.Sprintf(`
-	kubectl
-	set
-	image
-	%s
-	--namespace %s
-	%s=%s
-	`, k8sObject, componentName, containerImage, namespace)
-}
-
-// TODO add spec for this
+// TODO replace this with client-go
 func KubectlTaintNodeCommand(node string) string {
 	// Format: kubectl taint nodes NODE key=value:NoSchedule
 	return fmt.Sprintf(`
@@ -63,7 +42,7 @@ func KubectlTaintNodeCommand(node string) string {
 	`, node)
 }
 
-// TODO add spec for this
+// TODO replace this with client-go
 func KubectlDrainNodeCommand(node string) string {
 	// Format: kubectl drain --ignore-daemonsets --force --delete-local-data <node name>
 	return fmt.Sprintf(`
@@ -76,7 +55,7 @@ func KubectlDrainNodeCommand(node string) string {
 	`, node)
 }
 
-// TODO add spec for this
+// TODO replace this with client-go
 func SetK8sContext(clusterName string) {
 	command := "kubectl"
 	arg01 := "config"
@@ -161,5 +140,65 @@ func GetContainerImageForK8sObject(k8sClient kubernetes.Interface, k8sObjectName
 		return daemonSet.Spec.Template.Spec.Containers[0].Image, nil
 	default:
 		return "", fmt.Errorf("please choose between Daemonset or Deployment k8sobject as they are currently supported")
+	}
+}
+
+// SetK8sObjectImage will set the image version for the deployment/daemonset object requested to update for
+func SetK8sObjectImage(k8sClient kubernetes.Interface, k8sObject, k8sObjectName, containerName, containerImage, k8sNamespace string) error {
+	containerFound := false
+	switch k8sObject {
+	case "deployment":
+		retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+			// Retrieve the latest version of Deployment before attempting update
+			// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
+			result, getErr := k8sClient.AppsV1().Deployments(k8sNamespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
+			if getErr != nil {
+				return fmt.Errorf("failed to get latest version of Deployment: %v", getErr)
+			}
+
+			for containerNumber, candidateContainer := range result.Spec.Template.Spec.Containers {
+				if candidateContainer.Name == containerName {
+					containerFound = true
+					result.Spec.Template.Spec.Containers[containerNumber].Image = containerImage // update container image
+				}
+			}
+			if !containerFound {
+				return fmt.Errorf("container %s was not found in the deployment object, skipping update", containerName)
+			}
+
+			_, updateErr := k8sClient.AppsV1().Deployments(k8sNamespace).Update(context.TODO(), result, metav1.UpdateOptions{})
+			return updateErr
+		})
+		if retryErr != nil {
+			return fmt.Errorf("container image update failed: %v", retryErr)
+		}
+		return nil
+	case "daemonset":
+		retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+			// Retrieve the latest version of Deployment before attempting update
+			// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
+			result, getErr := k8sClient.AppsV1().DaemonSets(k8sNamespace).Get(context.TODO(), k8sObjectName, metav1.GetOptions{})
+			if getErr != nil {
+				return fmt.Errorf("failed to get latest version of Daemonset: %v", getErr)
+			}
+
+			for containerNumber, candidateContainer := range result.Spec.Template.Spec.Containers {
+				if candidateContainer.Name == containerName {
+					containerFound = true
+					result.Spec.Template.Spec.Containers[containerNumber].Image = containerImage // update container image
+				}
+			}
+			if !containerFound {
+				return fmt.Errorf("container %s was not found in the daemonset object, skipping update", containerName)
+			}
+			_, updateErr := k8sClient.AppsV1().DaemonSets(k8sNamespace).Update(context.TODO(), result, metav1.UpdateOptions{})
+			return updateErr
+		})
+		if retryErr != nil {
+			return fmt.Errorf("container image update failed: %v", retryErr)
+		}
+		return nil
+	default:
+		return errors.New("please pass the k8sObject to be from daemonset or deployment")
 	}
 }
