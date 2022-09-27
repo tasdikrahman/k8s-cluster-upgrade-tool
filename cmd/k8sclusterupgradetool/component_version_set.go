@@ -56,7 +56,7 @@ $ k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node 
 		case "coredns":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "coredns")
 			if err != nil {
-				log.Fatalln("There was an error reading config from the config file")
+				log.Fatalf("there was an error reading config from the config file: %v", err)
 			}
 			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 			if err != nil {
@@ -65,7 +65,7 @@ $ k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node 
 		case "kube-proxy":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "kube-proxy")
 			if err != nil {
-				log.Println(err)
+				log.Fatalf("there was an error reading config from the config file: %v", err)
 			}
 			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 			if err != nil {
@@ -74,7 +74,7 @@ $ k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node 
 		case "aws-node":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "aws-node")
 			if err != nil {
-				log.Println(err)
+				log.Fatalf("there was an error reading config from the config file: %v", err)
 			}
 			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 			if err != nil {
@@ -83,7 +83,7 @@ $ k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node 
 		case "cluster-autoscaler":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "cluster-autoscaler")
 			if err != nil {
-				log.Println(err)
+				log.Fatalf("there was an error reading config from the config file: %v", err)
 			}
 			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
 			if err != nil {
