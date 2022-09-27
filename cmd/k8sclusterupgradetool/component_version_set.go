@@ -58,25 +58,37 @@ $ k8sclusterupgradetool component version set -c=valid-cluster-name -o=aws-node 
 			if err != nil {
 				log.Fatalln("There was an error reading config from the config file")
 			}
-			setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			if err != nil {
+				log.Fatalf("there was error while setting component version for coredns: %v", err)
+			}
 		case "kube-proxy":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "kube-proxy")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			if err != nil {
+				log.Fatalf("there was error while setting component version for kube-proxy: %v", err)
+			}
 		case "aws-node":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "aws-node")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			if err != nil {
+				log.Fatalf("there was error while setting component version for aws-node: %v", err)
+			}
 		case "cluster-autoscaler":
 			k8sObject, err := configuration.GetK8sObjectForCluster(cluster, "cluster-autoscaler")
 			if err != nil {
 				log.Println(err)
 			}
-			setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			err = setComponentVersion(k8sClient, imageTag, componentName, k8sObject.ObjectType, k8sObject.ContainerName, k8sObject.Namespace)
+			if err != nil {
+				log.Fatalf("there was error while setting component version for cluster-autoscaler: %v", err)
+			}
 		default:
 			log.Println("please check the passed components, the supported components are cluster-autoscaler, kube-proxy, coredns, aws-node")
 		}
@@ -100,23 +112,24 @@ func init() {
 	nodeTaintAndDrainCmd.MarkFlagRequired("component-object-version")
 }
 
-func setComponentVersion(k8sClient kubernetes.Interface, imageTag, componentName, componentK8sObject, containerName, namespace string) {
+func setComponentVersion(k8sClient kubernetes.Interface, imageTag, componentName, componentK8sObject, containerName, namespace string) error {
 	// get current imagePrefix
 	currentContainerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, componentName, componentK8sObject, namespace)
 	if err != nil {
-		log.Fatalln("Error: there was an error while retrieving the container image")
+		return err
 	}
 
 	imagePrefix, err := k8s.ParseComponentImage(currentContainerImage, "imagePrefix")
 	if err != nil {
-		log.Fatalln("There was an error while parsing the image prefix step: ", err)
+		return err
 	}
 	containerImage := imagePrefix + ":" + imageTag
 
 	err = k8s.SetK8sObjectImage(k8sClient, componentK8sObject, componentName, containerName, containerImage, namespace)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	log.Printf("%s has been set to %s in cluster \n", componentName, imageTag)
+	return nil
 }
