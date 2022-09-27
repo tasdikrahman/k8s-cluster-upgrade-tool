@@ -47,21 +47,12 @@ $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 				log.Fatal("There was an error initializing the k8sclient with the passed cluster context")
 			}
 
-			err = checkComponentVersion("aws-node", cluster, configuration, k8sClient)
-			if err != nil {
-				log.Fatalf("error while checking for aws-node component version: %v", err)
-			}
-			err = checkComponentVersion("kube-proxy", cluster, configuration, k8sClient)
-			if err != nil {
-				log.Fatalf("error while checking for kube-proxy component version: %v", err)
-			}
-			err = checkComponentVersion("coredns", cluster, configuration, k8sClient)
-			if err != nil {
-				log.Fatalf("error while checking for coredns component version: %v", err)
-			}
-			err = checkComponentVersion("cluster-autoscaler", cluster, configuration, k8sClient)
-			if err != nil {
-				log.Fatalf("error while checking for cluster-autoscaler component version: %v", err)
+			components := []string{"aws-node", "kube-proxy", "coredns", "cluster-autoscaler"}
+			for _, componentName := range components {
+				err = checkComponentVersion(componentName, cluster, configuration, k8sClient)
+				if err != nil {
+					log.Fatalf("error while checking for %s component version: %v", componentName, err)
+				}
 			}
 		} else {
 			log.Fatal("Please pass a valid clusterName")
