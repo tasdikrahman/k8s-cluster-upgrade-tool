@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	K8sClusterUpgradeToolVersion = "v0.4.0"
+	K8sClusterUpgradeToolVersion = "v0.4.1"
 )
 
 var versionCmd = &cobra.Command{
