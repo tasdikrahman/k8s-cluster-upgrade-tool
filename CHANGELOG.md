@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+### v0.4.1
+
+#### Changes
+
+- improve error handling for `component version set` and `component version check` flow, remove repetitive function calls.
+
 ### v0.4.0
 
 #### Adds
