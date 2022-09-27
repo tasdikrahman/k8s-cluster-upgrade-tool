@@ -46,31 +46,44 @@ $ k8sclusterupgradetool component version check -c=valid-cluster-name`,
 			if err != nil {
 				log.Fatal("There was an error initializing the k8sclient with the passed cluster context")
 			}
-			checkComponentVersion("aws-node", cluster, configuration, k8sClient)
-			checkComponentVersion("kube-proxy", cluster, configuration, k8sClient)
-			checkComponentVersion("coredns", cluster, configuration, k8sClient)
-			checkComponentVersion("cluster-autoscaler", cluster, configuration, k8sClient)
+
+			err = checkComponentVersion("aws-node", cluster, configuration, k8sClient)
+			if err != nil {
+				log.Fatalf("error while checking for aws-node component version: %v", err)
+			}
+			err = checkComponentVersion("kube-proxy", cluster, configuration, k8sClient)
+			if err != nil {
+				log.Fatalf("error while checking for kube-proxy component version: %v", err)
+			}
+			err = checkComponentVersion("coredns", cluster, configuration, k8sClient)
+			if err != nil {
+				log.Fatalf("error while checking for coredns component version: %v", err)
+			}
+			err = checkComponentVersion("cluster-autoscaler", cluster, configuration, k8sClient)
+			if err != nil {
+				log.Fatalf("error while checking for cluster-autoscaler component version: %v", err)
+			}
 		} else {
 			log.Fatal("Please pass a valid clusterName")
 		}
 	},
 }
 
-func checkComponentVersion(componentName, clusterName string, configuration config.Configurations, k8sClient kubernetes.Interface) {
+func checkComponentVersion(componentName, clusterName string, configuration config.Configurations, k8sClient kubernetes.Interface) error {
 	log.Printf("Checking %s version\n", componentName)
 	k8sObject, err := configuration.GetK8sObjectForCluster(clusterName, componentName)
 	if err != nil {
-		log.Fatalf("there was an error while retrieving the k8sobject name and object type from the config: %v\n", err)
+		return err
 	}
 
 	containerImage, err := k8s.GetContainerImageForK8sObject(k8sClient, k8sObject.DeploymentName, k8sObject.ObjectType, k8sObject.Namespace)
 	if err != nil {
-		log.Fatalf("there was an issue while retrieving the information from the cluster for the %s component: %v\n", componentName, err)
+		return err
 	}
 
 	imageTag, err := k8s.ParseComponentImage(containerImage, "imageTag")
 	if err != nil {
-		log.Fatalf("there was an error parsing the image from the parsed command output: %v", err)
+		return err
 	}
 
 	viperQuery := fmt.Sprintf("components.%s", componentName)
@@ -79,4 +92,5 @@ func checkComponentVersion(componentName, clusterName string, configuration conf
 	} else {
 		log.Printf("%s needs to be updated, is currently on %s, desired version: %s\n", componentName, imageTag, viper.Get(viperQuery))
 	}
+	return nil
 }
